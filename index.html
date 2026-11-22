@@ -3,10 +3,13 @@
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
-<title>Gangahoria v38</title>
+<title>Gangahoria v46</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
 :root{--bg:#f6f5f2;--card:#fff;--tx:#1d1d1b;--mu:#6b6a65;--bd:#d9d7ce;--fr:#efede6;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171716;--card:#232321;--tx:#f0efe9;--mu:#9a9990;--bd:#3d3d36;--fr:#2c2c28;color-scheme:dark}}
@@ -58,6 +61,7 @@ td.n{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 tr.dr td{opacity:.45}
 tr.ot td{box-shadow:inset 0 3px 0 #ff7a1a}
 tr.ob td{box-shadow:inset 0 -3px 0 #ff7a1a}
+#lg{position:fixed;inset:0;background:var(--bg);z-index:60;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}#lg div{max-width:340px}#lg b{font-size:20px;display:block;margin-bottom:6px}#lg p{color:var(--mu);margin:6px 0 16px;line-height:1.5}#lg button{width:100%;padding:12px;font-weight:700}#lgm{margin-top:12px;color:#d64545;font-size:13px;min-height:18px}
 #er{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:90px;background:#d64545;color:#fff;padding:10px 16px;border-radius:10px;font-weight:700;z-index:30;max-width:90vw;text-align:center}
 #sh{display:none;position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--bd);padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px));z-index:25;box-shadow:0 -6px 20px rgba(0,0,0,.25)}
 #sh .bar{padding:10px 0 0}
@@ -75,13 +79,14 @@ td.c small.vc{display:block;font-size:9px;font-weight:400;line-height:1;margin-t
 </head>
 <body>
 <header>
-<div class="top"><button id="pv">‹</button><div><b id="ttl"></b><div style="font-size:11px;color:var(--mu);margin-top:2px">Gangahoria v38</div></div><button id="nx">›</button></div>
+<div class="top"><button id="pv">‹</button><div><b id="ttl"></b><div style="font-size:11px;color:var(--mu);margin-top:2px">Gangahoria v46</div></div><button id="nx">›</button></div>
 <div class="pal" id="pal"></div>
 <div class="hint"><span id="st">…</span></div><div id="bkn" class="hint" style="display:none;color:#d2691e"></div>
 </header>
 <div class="w"><table id="tb"></table></div>
-<div class="bar" id="tbar"><button id="un" disabled style="opacity:.4">↶ Undo</button><button id="bk">⬇ Backup</button><button id="pd">Month PDF</button><button id="p2">Overtime PDF</button><button id="mm">📊 LMD Monthly</button><button id="fx">🗂 Create form</button><button id="nm">Names</button><button id="cb">Contacts</button><button id="rc">📒 Roll-call</button><button id="fu">📊 Follow-up</button><button id="lb">🏖 Leave balance</button><button id="ar">🔒 Archive</button><button id="xl">📗 Excel</button><button id="tr">📋 Track forms</button><button id="py">💰 Payroll</button><button id="hs">📲 Home Screen</button><button id="tbs">✎ Arrange icons</button><button id="tbr">↺ Original order</button><div id="tbh" style="display:none">Tap one icon, then tap another to swap them. Tap “Done” when finished.</div></div>
+<div class="bar" id="tbar"><button id="un" disabled style="opacity:.4">↶ Undo</button><button id="bk">⬇ Backup</button><button id="pd">Month PDF</button><button id="p2">Overtime PDF</button><button id="mm">📊 LMD Monthly</button><button id="fx">🗂 Create form</button><button id="nm">Names</button><button id="cb">Contacts</button><button id="rc">📒 Roll-call</button><button id="fu">📊 Follow-up</button><button id="al">🗓 Landmark archive</button><button id="ar">🔒 Archive</button><button id="xl">📗 Excel</button><button id="tr">📋 Track forms</button><button id="py">💰 Payroll</button><button id="hs">📲 Home Screen</button><button id="tbs">✎ Arrange icons</button><button id="tbr">↺ Original order</button><div id="tbh" style="display:none">Tap one icon, then tap another to swap them. Tap “Done” when finished.</div></div>
 <div id="er"></div><div id="sh"></div>
+<div id="lg"><div><b>Gangahoria</b><p>Sign in with Google to open your shift sheets.<br>تسجيل الدخول للوصول إلى البيانات</p><button id="lgb" disabled>Loading…</button><div id="lgm"></div></div></div>
 <script>
 var $=function(i){return document.getElementById(i)};
 var K=[["D","نهاري"],["N","ليلي"],["DS","تطبيق"],["V","إجازة"],["Z","مرضي"],["C","عارضة"],["A","غياب"],["S","طبي"],["SM","نقل"]];
@@ -107,11 +112,9 @@ function nm(p){var e=RO.e&&RO.e[p[3]];return e?[e.n,e.r,p[2],p[3]]:p}
 function lay(){var o=G.map(function(g){return[g[0],[]]});plist().forEach(function(x){var p=x[0];if(RO.h[p[3]]||resGone(p[3],key(days()[0])))return;var g=RO.g[p[3]];o[g==null?x[1]:g][1].push(nm(p))});o.forEach(function(g,gi){var l=RO.o&&RO.o[gi];if(l){var a=g[1].map(function(p,i){return[p,i]});a.sort(function(x,y){var i=l.indexOf(x[0][3]),j=l.indexOf(y[0][3]);i=i<0?1e6+x[1]:i;j=j<0?1e6+y[1]:j;return i-j});g[1]=a.map(function(x){return x[0]})}});var DL0=days(),b0=key(DL0[DL0.length-1]);o.forEach(function(g,gi){var a=g[1].map(function(p,i){var c=RO.c[p[3]]||{},e=(c.rs&&c.rz)?(c.rs<c.rz?c.rs:c.rz):(c.rs||c.rz);return[p,i,e&&e<=b0?1:0]});a.sort(function(x,y){if(x[2]!=y[2])return x[2]-y[2];if(!x[2]&&(gi==2||gi==3)){var kx=+((RO.c[x[0][3]]||{}).k)||1e15,ky=+((RO.c[y[0][3]]||{}).k)||1e15;if(kx!=ky)return kx-ky}return x[1]-y[1]});g[1]=a.map(function(x){return x[0]})});return o}
 function err(m,c,t){var e=$("er");e.textContent=m;e.style.background=c||"#d64545";e.style.display="block";clearTimeout(erT);erT=setTimeout(function(){e.style.display="none"},t||3000)}
 function saveRO(){
-  if(DB){chain=chain.then(function(){return DB.collection("data/users/"+UID).doc("roster").set({h:RO.h,g:RO.g,a:RO.a,e:RO.e,o:RO.o,c:RO.c,f:RO.f||{},fm:RO.fm||[]})}).then(function(){st("☁ Saved","#2f9e5b")},function(){st("⚠ Not saved - check your connection","#d64545")})}
-  else{try{localStorage.setItem("s5_roster",JSON.stringify(RO))}catch(e){}}
+  chain=chain.then(function(){return DB.collection("data/users/"+UID).doc("roster").set({h:RO.h,g:RO.g,a:RO.a,e:RO.e,o:RO.o,c:RO.c,f:RO.f||{},fm:RO.fm||[]})}).then(function(){st("☁ Saved","#2f9e5b")},function(){st("⚠ Not saved - check your connection","#d64545")});
 }
 function loadRO(){
-  if(!DB){try{var t=JSON.parse(localStorage.getItem("s5_roster")||"null");if(t)RO={h:t.h||{},g:t.g||{},a:t.a||[],e:t.e||{},o:t.o||{},c:t.c||{},f:t.f||{},fm:t.fm||[]}}catch(e){}return Promise.resolve()}
   return DB.collection("data/users/"+UID).doc("roster").get().then(function(s){if(s.exists){var d=s.data()||{};d=JSON.parse(JSON.stringify(d));RO={h:d.h||{},g:d.g||{},a:d.a||[],e:d.e||{},o:d.o||{},c:d.c||{},f:d.f||{},fm:d.fm||[]}}},function(){});
 }
 function extra(t){return Math.max(0,5-t.V)+t.DS}
@@ -119,16 +122,13 @@ function updUndo(){var b=$("un");if(b){b.disabled=!hist.length;b.style.opacity=h
 function write(obj,noHist){
   if(!noHist){var pv={};Object.keys(obj).forEach(function(k){pv[k]=cells[k]||""});hist.push(pv);if(hist.length>100)hist.shift()}
   Object.keys(obj).forEach(function(k){if(obj[k])cells[k]=obj[k];else delete cells[k]});updUndo();
-  if(DB){
-    var r=ref();st("Saving…");
-    chain=chain.then(function(){return r.update({c:obj})}).then(function(){st("☁ Saved","#2f9e5b")},function(){st("⚠ Not saved - check your connection","#d64545")});
-  }else{try{localStorage.setItem("s5_"+pid(),JSON.stringify(cells));st("⚠ Saved on this phone only","#d2691e")}catch(e){st("⚠ Not saved","#d64545")}}
+  var r=ref();st("Saving…");
+  chain=chain.then(function(){return r.set({c:obj},{merge:true})}).then(function(){st("☁ Saved","#2f9e5b")},function(){st("⚠ Not saved - check your connection","#d64545")});
 }
 function raisedOf(id,D){var last="",r=false;D.forEach(function(d){var c=get(id,key(d));if(c=="R"){if(last=="A")r=true}else if(c)last=c});return r}
 function tot(id){var o={};K.forEach(function(k){o[k[0]]=0});days().forEach(function(d){var c=get(id,key(d));if(c&&o[c]!=null)o[c]++});return o}
 function load(){
   var my=++tk;ready=false;cells={};hist=[];updUndo();
-  if(!DB){try{cells=JSON.parse(localStorage.getItem("s5_"+pid())||"{}")}catch(e){}ready=true;render();st("⚠ Saved on this phone only","#d2691e");return Promise.resolve()}
   st("Loading…");render();
   var r=ref();
   return r.get().then(function(s){
@@ -262,7 +262,7 @@ $("sh").onclick=function(e){
   var b=e.target.closest("[data-a]");if(!b)return;var a=b.dataset.a;
   if(a=="cpn"){var c0=RO.c[SID]||{};if(navigator.clipboard)navigator.clipboard.writeText(c0.m||"").then(function(){err("Number copied","#2f9e5b",2000)},function(){prompt("Number:",c0.m||"")});else prompt("Number:",c0.m||"");return}
   if(a=="call"){callN((RO.c[SID]||{}).m);return}
-  if(a=="cpl"){var u0="https://claude.ai/artifact/ST3r5FwAZmFuBPFrjcQMaW";if(navigator.clipboard)navigator.clipboard.writeText(u0).then(function(){err("Link copied","#2f9e5b",2000)},function(){prompt("Link:",u0)});else prompt("Link:",u0);return}
+  if(a=="cpl"){var u0=location.href.split("#")[0];if(navigator.clipboard)navigator.clipboard.writeText(u0).then(function(){err("Link copied","#2f9e5b",2000)},function(){prompt("Link:",u0)});else prompt("Link:",u0);return}
   if(a=="rd-"||a=="rd+"){RCD=new Date(RCD.getFullYear(),RCD.getMonth(),RCD.getDate()+(a=="rd+"?1:-1));rcLoad();return}
   if(a=="rpdf"){rcPdf();return}
   if(a=="rzc"){var cz=Object.assign({},RO.c[SID]);cz.rzx=cz.rz;delete cz.rz;RO.c[SID]=cz;saveRO();render();cardV(SID);err("Cancelled","#2f9e5b",2000);return}
@@ -279,6 +279,7 @@ $("sh").onclick=function(e){
   if(a=="mtsave"){fmIn();var nn=($('mtn').value||'').trim();if(!nn){err('Type a template name first');return}var mt=((RO.f||{}).mt||[]).slice(),nt={n:nn,to:FM.v.to||'',greet:FM.v.greet||'',body:FM.v.body||'',end:FM.v.end||''},ix=-1;mt.forEach(function(q,i){if(q.n==nn)ix=i});if(ix>=0)mt[ix]=nt;else mt.push(nt);if(mt.length>30)mt.shift();RO.f=Object.assign({},RO.f,{mt:mt});saveRO();FM.tp=ix>=0?ix:mt.length-1;fmEdit();err('Template saved','#2f9e5b',2000);return}
   if(a=="mtdel"){var tp=FM.tp;if(tp==null)return;var mt2=((RO.f||{}).mt||[]).slice();mt2.splice(tp,1);RO.f=Object.assign({},RO.f,{mt:mt2});saveRO();FM.tp=null;fmIn();fmEdit();return}
   if(a&&a.slice(0,3)=="arx"){arxAct(a,b);return}
+  if(a&&a.slice(0,3)=="alx"){alxAct(a,b);return}
   if(a=="arg"){var q=b.dataset.k.split('_');RCD=new Date(q[0]+'T12:00:00');RCD.setHours(0,0,0,0);RCM=q[1];RCF='p';RC=null;rcSheet();return}
   if(a=="pg"||a=="pgn"){var s0=b.dataset.s,w0=b.dataset.w,ro=ppRole(s0,w0);
     if(a=="pg"&&ppAp(s0,w0)){ppSetAp(s0,w0,false);rcRender();return}
@@ -289,7 +290,7 @@ $("sh").onclick=function(e){
   if(a=="rmn"||a=="rmd"||a=="rmb"){RCM=a.charAt(2);rcRender();return}
   if(a=="rh"){rcShare();return}
   if(a=="rv"){if(RCB&&DL)DL.save({filename:"roll-call-"+key(RCD)+".png",data:RCB}).catch(function(e){if(!e||e.code!="declined")err("Could not save the image")});else err("Image is not ready");return}
-  if(a=="m_home"){fmHome(SID);return}   if(a=="adv_go"){advNew();return}   if(a=="sp_go"){spOpen();return}
+  if(a=="m_home"){fmHome(SID);return}   if(a=="adv_go"){advNew();return}   if(a=="sp_go"){spOpen();return}   if(a=="lb_go"){lbOpen();return}
   if(a=="m_new"){fmNew(b.dataset.t);return}
   if(a=="m_open"){fmOpenH(+b.dataset.h);return}
   if(a=="m_word"){fmWord();return}
@@ -375,15 +376,15 @@ function cardV(id){
   h+='<div class="bar">';
   if(m)h+='<a href="tel:+'+waN(m)+'" onclick="callFB(\''+esc(m)+'\')">📞 Call</a><a href="https://wa.me/'+esc(waN(m))+'" target="_blank" rel="noopener" aria-label="WhatsApp" style="display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24"><path fill="#25D366" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a><button data-a="cpn">Copy number</button>';
   setTimeout(function(){docsDraw(id)},0);
-  sheet(h+'<div id="cdocs"></div>'+(m?'':'<button data-a="ce">📞 Add number</button>')+(id=='m1'?'<button data-a="adv_go">💵 Advances sheet (كشف السلف)</button><button data-a="sp_go">👥 Staff PDF</button>':'')+'<button data-a="m_home">🗂 Archived forms ('+(RO.fm||[]).filter(function(q){return q.i==id}).length+')</button>'+'<button data-a="ce">Edit card</button><button data-a="po">More</button><button data-a="cl">All cards</button><button data-a="x">Close</button></div>');
+  sheet(h+'<div id="cdocs"></div>'+(m?'':'<button data-a="ce">📞 Add number</button>')+(id=='m1'?'<button data-a="adv_go">💵 Advances sheet (كشف السلف)</button><button data-a="sp_go">👥 Staff PDF</button><button data-a="lb_go">🏖 Leave balance</button>':'')+'<button data-a="m_home">🗂 Archived forms ('+(RO.fm||[]).filter(function(q){return q.i==id}).length+')</button>'+'<button data-a="ce">Edit card</button><button data-a="po">More</button><button data-a="cl">All cards</button><button data-a="x">Close</button></div>');
 }
 var DOCS={};
 function docsGet(id){if(DOCS[id])return Promise.resolve(DOCS[id]);
-  if(DB)return DB.collection("data/users/"+UID).doc("docs-"+id).get().then(function(q){var d=q.exists?JSON.parse(JSON.stringify(q.data()||{})):{};DOCS[id]=d.l||[];return DOCS[id]},function(){DOCS[id]=[];return DOCS[id]});
-  try{DOCS[id]=JSON.parse(localStorage.getItem("s5_docs_"+id)||"[]")}catch(e){DOCS[id]=[]}return Promise.resolve(DOCS[id])}
+  return DB.collection("data/users/"+UID).doc("docs-"+id).get().then(function(q){var d=q.exists?JSON.parse(JSON.stringify(q.data()||{})):{};DOCS[id]=d.l||[];return DOCS[id]},function(){DOCS[id]=[];return DOCS[id]});
+}
 function docsPut(id,a){DOCS[id]=a;
-  if(DB)return DB.collection("data/users/"+UID).doc("docs-"+id).set({l:a}).then(function(){st("☁ Saved","#2f9e5b")},function(){st("⚠ Not saved - check your connection","#d64545");err("Could not save the document")});
-  try{localStorage.setItem("s5_docs_"+id,JSON.stringify(a))}catch(e){err("Phone storage is full")}return Promise.resolve()}
+  return DB.collection("data/users/"+UID).doc("docs-"+id).set({l:a}).then(function(){st("☁ Saved","#2f9e5b")},function(){st("⚠ Not saved - check your connection","#d64545");err("Could not save the document")});
+}
 function docsShrink(f){return new Promise(function(ok,no){var u=URL.createObjectURL(f),im=new Image();im.onload=function(){var k=Math.min(1,1100/Math.max(im.width,im.height)),cv=document.createElement("canvas");cv.width=Math.round(im.width*k);cv.height=Math.round(im.height*k);cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);URL.revokeObjectURL(u);ok(cv.toDataURL("image/jpeg",.7))};im.onerror=function(){no(new Error("img"))};im.src=u})}
 function docsDraw(id){var bx=$("cdocs");if(!bx)return;docsGet(id).then(function(a){bx=$("cdocs");if(!bx||SID!=id)return;
   var h='<div class="lb" style="font-size:12px;margin-top:12px"><b>Documents (مستندات)</b> · '+a.length+'/6 · scans or photos kept on this card</div><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">';
@@ -491,7 +492,7 @@ function impAA(){
     if(r.f)RO.f=Object.assign({},RO.f,r.f);
     if(r.fm&&r.fm.length){var hs={};(RO.fm||[]).forEach(function(q){hs[q.h]=1});RO.fm=(RO.fm||[]).concat(r.fm.filter(function(q){return !hs[q.h]}))}}
   var p=Promise.resolve();
-  ks.forEach(function(m){var cl=ms[m]||{};p=p.then(function(){if(DB)return DB.collection("data/users/"+UID).doc("p-"+m).set({c:cl});try{localStorage.setItem("s5_"+m,JSON.stringify(cl))}catch(e){}})});
+  ks.forEach(function(m){var cl=ms[m]||{};p=p.then(function(){return DB.collection("data/users/"+UID).doc("p-"+m).set({c:cl})})});
   p.then(function(){saveRO();return load()}).then(function(){render();sheet('<b>Restored '+ks.length+' month(s)</b><div class="bar"><button data-a="x">Close</button></div>')}).catch(function(){err("Restore failed - try again")});
 }
 function ageOf(dob){var p=dob.split("-"),n=new Date(),a=n.getFullYear()-+p[0];if(n.getMonth()+1<+p[1]||(n.getMonth()+1==+p[1]&&n.getDate()<+p[2]))a--;return a}
@@ -508,14 +509,13 @@ function callN(m){
   setTimeout(function(){if(done)return;if(navigator.clipboard)navigator.clipboard.writeText(m).catch(function(){});err("The phone could not open from here - number "+m+" copied. Paste it in your dialer, or use WhatsApp.","#d2691e",6000)},900);
 }
 function hsheet(){
-  var ios=/iPhone|iPad|iPod/i.test(navigator.userAgent),u="https://claude.ai/artifact/ST3r5FwAZmFuBPFrjcQMaW";
-  sheet('<b>Add to Home Screen</b><div style="margin-top:8px;line-height:1.6;font-size:14px">1. Tap <b>Open in browser</b> below.<br>2. '+(ios?'In Safari tap the <b>Share</b> button, then <b>Add to Home Screen</b>.':'In Chrome tap the <b>⋮</b> menu, then <b>Add to Home screen</b> (or <b>Install app</b>).')+'<br>3. Tap <b>Add</b>.</div><div class="lb" style="font-size:12px;margin-top:6px">Stay signed in to claude.ai in that browser so your data syncs.</div><div class="bar"><a href="'+u+'" target="_blank" rel="noopener">Open in browser</a><button data-a="cpl">Copy link</button><button data-a="x">Close</button></div>');
+  var ios=/iPhone|iPad|iPod/i.test(navigator.userAgent),u=location.href.split("#")[0];
+  sheet('<b>Add to Home Screen</b><div style="margin-top:8px;line-height:1.6;font-size:14px">1. Tap <b>Open in browser</b> below.<br>2. '+(ios?'In Safari tap the <b>Share</b> button, then <b>Add to Home Screen</b>.':'In Chrome tap the <b>⋮</b> menu, then <b>Add to Home screen</b> (or <b>Install app</b>).')+'<br>3. Tap <b>Add</b>.</div><div class="lb" style="font-size:12px;margin-top:6px">Sign in with the same Google account so your data syncs.</div><div class="bar"><a href="'+u+'" target="_blank" rel="noopener">Open in browser</a><button data-a="cpl">Copy link</button><button data-a="x">Close</button></div>');
 }
 $("hs").onclick=hsheet;
 var FU=null,FUB=null,FUT=null;
 function pidOf(d){var m=d.getMonth()+1,y=d.getFullYear();if(d.getDate()>=26){m++;if(m>12){m=1;y++}}return y+'-'+pad(m)}
 function cellsOf(d){var id=pidOf(d);if(id==pid())return Promise.resolve(cells);
-  if(!DB){try{return Promise.resolve(JSON.parse(localStorage.getItem('s5_'+id)||'{}'))}catch(e){return Promise.resolve({})}}
   return DB.collection('data/users/'+UID).doc('p-'+id).get().then(function(s){return s.exists?JSON.parse(JSON.stringify((s.data()||{}).c||{})):{}},function(){return{}})}
 function fuDate(d){var W=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],Mo=['January','February','March','April','May','June','July','August','September','October','November','December'];return W[d.getDay()]+', '+d.getDate()+' '+Mo[d.getMonth()]+' '+d.getFullYear()}
 function fuCalc(cY,cT,y,now){
@@ -590,14 +590,15 @@ function ppCalc(F,s){
   var ct=F.ct,sm=function(c){return(c.V||0)+(c.Z||0)+(c.C||0)+(c.A||0)};
   return{off:off,sup:sup,ind:ind,act:act,out:F.out,ab:F.ab,
     R:[{p:off.length,s:off.length+sm(ct[0]),c:ct[0]},
-       {p:sup.length,s:sup.length-(act?1:0)+sm(ct[1]),c:ct[1]},
-       {p:ind.length,s:ind.length+(act?1:0)+sm(ct[2]),c:ct[2]}]}}
+       {p:sup.length,s:sup.length+sm(ct[1]),c:ct[1]},
+       {p:ind.length,s:ind.length+sm(ct[2]),c:ct[2]}]}}
+var PSC=2,TSC=2;
 function ppForm(F,s,site,per){
   var C=ppSnap(s)||ppCalc(F,s),W=1000,RH=33,FN='Tahoma, Arial, sans-serif',BK='#111';
   var SC=[['بيان الضباط',C.off,2],['بيان المشرفين',C.sup,3],['بيان الحارسات',[],3],['بيان الأفراد',C.ind,11],['بيان الخوارج',C.out,4],['بيان الغياب',C.ab,3]];
   var H=235+64+150+14;SC.forEach(function(q){q[3]=Math.max(q[2],Math.ceil(q[1].length/2));H+=32+q[3]*RH+10});H+=140;
-  var cv=document.createElement('canvas');cv.width=W*2;cv.height=H*2;
-  var x=cv.getContext('2d');x.scale(2,2);x.fillStyle='#fff';x.fillRect(0,0,W,H);
+  var cv=document.createElement('canvas');cv.width=W*PSC;cv.height=H*PSC;
+  var x=cv.getContext('2d');x.scale(PSC,PSC);x.fillStyle='#fff';x.fillRect(0,0,W,H);
   function ln(a,b,c,d,w,dash){x.strokeStyle=BK;x.lineWidth=w||1.3;x.setLineDash(dash||[]);x.beginPath();x.moveTo(a,b);x.lineTo(c,d);x.stroke();x.setLineDash([])}
   function bx(a,b,w,h,lw){x.strokeStyle=BK;x.lineWidth=lw||1.3;x.strokeRect(a,b,w,h)}
   function tx(t,cx,cy,sz,al,mw,fw){t=String(t);var z=sz;x.font=(fw||'bold')+' '+z+'px '+FN;x.direction='rtl';
@@ -846,8 +847,8 @@ function tmUi(z){var s=z[0],C=ppCalc(RC[s],s),sp=tmSplit(C,s),pts=tmPts(),P=tmGe
   if(sp.extra)h+='<div class="lb" style="color:#d2691e;font-size:12px" dir="rtl">'+sp.extra+' فرد إضافي غير ظاهر (الكشف يتسع لـ 10 في لاندمارك)</div>';
   return h}
 function tmDraw(){
-  var W=1414,H=1000,pw=650,FN='Tahoma, Arial, sans-serif',BK='#111',cv=document.createElement('canvas');cv.width=W*2;cv.height=H*2;
-  var x=cv.getContext('2d');x.scale(2,2);x.imageSmoothingQuality='high';x.fillStyle='#fff';x.fillRect(0,0,W,H);
+  var W=1414,H=1000,pw=650,FN='Tahoma, Arial, sans-serif',BK='#111',cv=document.createElement('canvas');cv.width=W*TSC;cv.height=H*TSC;
+  var x=cv.getContext('2d');x.scale(TSC,TSC);x.imageSmoothingQuality='high';x.fillStyle='#fff';x.fillRect(0,0,W,H);
   function tx(t,cx,cy,sz,al,mw,fw){t=String(t);var z=sz;x.font=(fw||'bold')+' '+z+'px '+FN;x.direction='rtl';
     if(mw)while(z>10&&x.measureText(t).width>mw){z--;x.font=(fw||'bold')+' '+z+'px '+FN}
     x.fillStyle=BK;x.textAlign=al||'center';x.textBaseline='middle';x.fillText(t,cx,cy)}
@@ -873,7 +874,7 @@ function tmDraw(){
     sp.land.forEach(function(e,j){rows.push([ad(j+1),'فرد امن',ppNm(e.n,4),P[e.i]||''])});
     var nr=Math.max(rows.length,5);
     for(i=0;i<nr;i++){var r=rows[i],yy=y+i*RH;
-      if(r)for(var k=0;k<4;k++){bx(cx[k],yy,cols[k],RH);if(k==1&&r[4]){tx('مشرف',cx[1]+cols[1]/2,yy+12,17,'center');tx('(قائم بالعمل)',cx[1]+cols[1]/2,yy+28,13,'center',cols[1]-6,'normal')}else if(r[k]!=='')tx(r[k],cx[k]+cols[k]/2,yy+RH/2+1,k==2?20:19,'center',cols[k]-10,k==2?'bold':'normal')}
+      if(r)for(var k=0;k<4;k++){bx(cx[k],yy,cols[k],RH);if(r[k]!=='')tx(r[k],cx[k]+cols[k]/2,yy+RH/2+1,k==2?20:19,'center',cols[k]-10,k==2?'bold':'normal')}
       if(i<5){bx(cx[4],yy,cols[4],RH);var ex=cx[4]+cols[4]/2,ey=yy+RH/2;
         if(i==0){chk(ex+22,ey);tx(ad(5),ex-12,ey+1,21,'center')}else if(i==2||i==4){chk(ex+22,ey);tx(ad(1),ex-12,ey+1,21,'center')}
         else tx(i==1?'دراجة بخارية':'مرايا عاكسة',ex,ey+1,18,'center',cols[4]-10)}}
@@ -1207,7 +1208,7 @@ function fmRec(s){
   e.s=s;e.v=FM.v;RO.fm.forEach(function(q,i){if(i<RO.fm.length-8&&q.v&&q.v.esig)delete q.v.esig});saveRO()}
 function fmHome(id){
   SID=id;FM=null;var i=pinfo(id);if(!i)return;
-  var h='<b>Archived forms · '+esc(i[0][0])+'</b><div class="lb" style="font-size:12px;margin-top:6px">Every form made for this name, newest first. New forms are made from the 🗂 Create form screen in the toolbar.</div>'+(id=='m1'?'<div class="bar"><button data-a="adv_go">💵 New advances sheet (كشف السلف)</button><button data-a="sp_go">👥 Staff PDF</button></div>':'');
+  var h='<b>Archived forms · '+esc(i[0][0])+'</b><div class="lb" style="font-size:12px;margin-top:6px">Every form made for this name, newest first. New forms are made from the 🗂 Create form screen in the toolbar.</div>'+(id=='m1'?'<div class="bar"><button data-a="adv_go">💵 New advances sheet (كشف السلف)</button><button data-a="sp_go">👥 Staff PDF</button><button data-a="lb_go">🏖 Leave balance</button></div>':'');
   var hs=(RO.fm||[]).filter(function(e){return e.i==id}).slice().reverse();
   if(!hs.length)h+='<div class="rr"><span class="lb">No archived forms yet</span></div>';
   hs.forEach(function(e){h+='<div class="rr" data-a="m_open" data-h="'+e.h+'" style="cursor:pointer"><span>'+esc(fmName(e.t))+'</span><span class="lb">'+fmDMY(e.d,'/')+' · '+(e.s=='signed'?'Approved ✔':'Draft')+(e.tr=='sent'?' · Sent':e.tr=='returned'?' · Returned':'')+'</span>'+(e.s=='signed'?'':'<button data-a="m_del" data-h="'+e.h+'" style="padding:4px 10px">🗑</button>')+'</div>'});
@@ -1383,7 +1384,7 @@ $('fu').onclick=function(){if(ready)fuOpen()};
 $("sh").oninput=function(e){if(e.target.id=="cq")fillL(e.target.value)};
 $("sh").onchange=function(e){if(e.target.id=="cdg"){docsAdd(e.target.files);e.target.value="";return}if(e.target.id=="fxin"){fxAtLoad(e.target.files);e.target.value="";return}if(e.target.id=="atin"){atLoad(e.target.files);e.target.value="";return}if(e.target.id=="cf"||e.target.id=="cg"){scanC(e.target.files[0]);e.target.value=""}else if(e.target.id=="sgf"){sgPhoto(e.target.files[0]);e.target.value=""}else if(e.target.id=="idin"){idLoad(e.target.files[0]);e.target.value=""}};
 $("cb").onclick=function(){if(ready)listC("")};
-$("lb").onclick=function(){if(ready)lbOpen()};$("ar").onclick=function(){if(ready)arOpen()};$("xl").onclick=function(){if(ready)xlsRun()};$("tr").onclick=function(){if(ready)trOpen()};;$("py").onclick=function(){if(ready)pyOpen()};
+$("al").onclick=function(){if(ready)alOpen()};$("ar").onclick=function(){if(ready)arOpen()};$("xl").onclick=function(){if(ready)xlsRun()};$("tr").onclick=function(){if(ready)trOpen()};;$("py").onclick=function(){if(ready)pyOpen()};
 
 var CC={D:["#fbbf24","#3a2600"],N:["#16a34a","#fff"],DS:["#7c3aed","#fff"],V:["#2563eb","#fff"],Z:["#38bdf8","#04283a"],C:["#f9a8d4","#4a0d2b"],A:["#dc2626","#fff"],S:["#0f766e","#fff"],SM:["#1e3a8a","#fff"],R:["#000","#fff"]};
 $("pd").onclick=function(){
@@ -1478,7 +1479,7 @@ $("cp")&&($("cp").onclick=function(){
 });
 function bkRun(){
   var b=$("bk");
-  if(!DL){err("Backup is not available here - open the app from its claude.ai link");return}
+  if(!DL){err("Backup is not available here");return}
   b.disabled=true;st("Preparing backup…");
   var out={app:"shift-sheet",version:1,saved:new Date().toISOString(),roster:JSON.parse(JSON.stringify(RO)),months:{}};
   function fin(){
@@ -1486,34 +1487,77 @@ function bkRun(){
     return DL.save({filename:f,data:new Blob([JSON.stringify(out)],{type:"application/json"})}).then(function(){RO.f=Object.assign({},RO.f,{lastBk:new Date().toISOString()});saveRO();bkCheck();err("Backup saved: "+Object.keys(out.months).length+" month(s)","#2f9e5b",3000)},function(e){if(!e||e.code!="declined")err("Could not save the backup")});
   }
   var p;
-  if(DB){p=DB.collection("data/users/"+UID).get().then(function(s){s.docs.forEach(function(d){if(d.id.indexOf("p-")!=0)return;var c=JSON.parse(JSON.stringify((d.data()||{}).c||{}));Object.keys(c).forEach(function(k){if(!c[k])delete c[k]});out.months[d.id.slice(2)]=c})})}
-  else{p=Promise.resolve();try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(/^s5_\d{4}-\d{2}$/.test(k))out.months[k.slice(3)]=JSON.parse(localStorage.getItem(k)||"{}")}}catch(e){}}
-  p.then(fin,function(){err("Could not read all months - backup not saved")}).then(function(){b.disabled=false;if(DB)st("☁ Saved","#2f9e5b");else st("⚠ Saved on this phone only","#d2691e")});
+  p=DB.collection("data/users/"+UID).get().then(function(s){s.docs.forEach(function(d){if(d.id.indexOf("p-")!=0)return;var c=JSON.parse(JSON.stringify((d.data()||{}).c||{}));Object.keys(c).forEach(function(k){if(!c[k])delete c[k]});out.months[d.id.slice(2)]=c})});
+  p.then(fin,function(){err("Could not read all months - backup not saved")}).then(function(){b.disabled=false;st("☁ Saved","#2f9e5b")});
 }
 $("bk").onclick=bkRun;
 function goToday(){var t=document.querySelector("th.td"),w=document.querySelector(".w");if(!t||!w)return;var r=t.getBoundingClientRect(),q=w.getBoundingClientRect();var fw=w.querySelector("th").offsetWidth;w.scrollLeft+=(r.left-q.left)-fw}
 pal();render();
 setTimeout(goToday,50);
-(async function(){
+/* ===== Cloud Firestore ===== */
+var firebaseConfig={
+  apiKey:"AIzaSyAv8tscCVgEjYoZ3VGNrwI2R4inawsoEnQ",
+  authDomain:"lmd-roster.firebaseapp.com",
+  projectId:"lmd-roster",
+  storageBucket:"lmd-roster.firebasestorage.app",
+  messagingSenderId:"715235916492",
+  appId:"1:715235916492:web:df57b768d06bef09e3e069"
+};
+DL={save:function(o){return new Promise(function(ok){var a=document.createElement("a"),u=URL.createObjectURL(o.data);a.href=u;a.download=o.filename;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(u);a.remove()},4000);ok()})}};
+function lgMsg(t){$("lgm").textContent=t||""}
+function migrate(){
+  /* one-time copy of old on-phone data (localStorage) into Firestore; existing cloud docs are never overwritten */
+  var flag="s5_migrated_"+UID;try{if(localStorage.getItem(flag))return Promise.resolve()}catch(e){return Promise.resolve()}
+  var col=DB.collection("data/users/"+UID),jobs=[];
+  function put(id,data,raw){jobs.push(col.doc(id).get().then(function(q){if(!q.exists)return col.doc(id).set(data)}))}
   try{
-    if(typeof claude!=="undefined"){
-      var u=await claude.use("user"),d=await claude.use("db"),id=u&&await u.id();
-      if(d&&id){DB=d;UID=id}
-      DL=await claude.use("downloads");
+    for(var i=0;i<localStorage.length;i++){
+      var k=localStorage.key(i),v=localStorage.getItem(k),m;
+      if(!k||k.indexOf("s5_")!=0||!v)continue;
+      if(k=="s5_roster"){put("roster",JSON.parse(v))}
+      else if(/^s5_\d{4}-\d{2}$/.test(k)){put("p-"+k.slice(3),{c:JSON.parse(v)})}
+      else if((m=k.match(/^s5_docs_(.+)$/))){put("docs-"+m[1],{l:JSON.parse(v)})}
+      else if((m=k.match(/^s5_(arc|arl)_(.+)$/))){put(m[1]+"-"+m[2],{img:v,t:Date.now()})}
     }
   }catch(e){}
-  try{SM=await claude.use("sample");if(SM){var lm=await SM.limits();SMI=!!(lm&&lm.images)}}catch(e){SM=null;SMI=false}
-  await loadRO();jsApply();await load();
-  goToday();setTimeout(goToday,300);
+  return Promise.all(jobs).then(function(){try{localStorage.setItem(flag,"1")}catch(e){}},function(){})
+}
+function start(user){
+  UID=user.uid;DB=firebase.firestore();
+  $("lg").style.display="none";
+  migrate().then(function(){return loadRO()}).then(function(){jsApply();return load()}).then(function(){goToday();setTimeout(goToday,300)});
+}
+(function(){
+  var lgb=$("lgb");
+  try{
+    firebase.initializeApp(firebaseConfig);
+    var fs=firebase.firestore();
+    try{fs.enablePersistence({synchronizeTabs:true}).catch(function(){})}catch(e){}
+    var au=firebase.auth(),started=false;
+    au.onAuthStateChanged(function(u){
+      if(u){if(!started){started=true;start(u)}}
+      else{$("lg").style.display="flex";lgb.disabled=false;lgb.textContent="Sign in with Google · تسجيل الدخول"}
+    });
+    au.getRedirectResult().catch(function(e){lgMsg("Sign-in failed: "+(e&&e.code||"error"))});
+    lgb.onclick=function(){
+      lgMsg("");lgb.disabled=true;
+      var p=new firebase.auth.GoogleAuthProvider();
+      au.signInWithPopup(p).catch(function(e){
+        if(e&&(e.code=="auth/popup-blocked"||e.code=="auth/operation-not-supported-in-this-environment"))return au.signInWithRedirect(p);
+        if(e&&(e.code=="auth/popup-closed-by-user"||e.code=="auth/cancelled-popup-request")){lgb.disabled=false;return}
+        lgMsg("Sign-in failed: "+(e&&e.code||"error"));lgb.disabled=false;
+      });
+    };
+  }catch(e){lgMsg("Could not start Firebase: "+e.message);lgb.textContent="Unavailable"}
 })();
 </script>
 <script>
-(function(){var bar=document.getElementById('tbar');if(!bar)return;var KEY='s5_tbo',DEF=['un','fx','fu','rc','mm','pd','nm','cb','p2','py','ar','tr','xl','lb','bk','hs'];
+(function(){var bar=document.getElementById('tbar');if(!bar)return;var KEY='s5_tbo',DEF=['un','fx','fu','rc','mm','pd','nm','cb','p2','py','ar','tr','xl','al','bk','hs'];
   var tbs=document.getElementById('tbs'),tbr=document.getElementById('tbr'),tbh=document.getElementById('tbh'),arr=false,sel=null;
   function btns(){return Array.prototype.slice.call(bar.querySelectorAll('button')).filter(function(b){return b.id&&b.id!='tbr'&&b.id!='tbs'})}
   function apply(ord){var m={};btns().forEach(function(b){m[b.id]=b});var seen={};ord.forEach(function(i){if(m[i]&&!seen[i]){seen[i]=1;bar.insertBefore(m[i],tbs)}});btns().forEach(function(b){if(!seen[b.id]){seen[b.id]=1;bar.insertBefore(b,tbs)}})}
   function save(){try{localStorage.setItem(KEY,JSON.stringify(btns().map(function(b){return b.id})))}catch(e){}}
-  var o=null;try{o=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}apply(o&&o.length?o:DEF);
+  var o=null;try{o=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}if(o&&o.length&&o.indexOf('al')<0)o=o.map(function(i){return i=='lb'?'al':i});apply(o&&o.length?o:DEF);
   function clr(){if(sel){sel.classList.remove('sel');sel=null}}
   function setArr(v){arr=v;clr();bar.classList.toggle('arr',arr);tbs.textContent=arr?'✓ Done':'✎ Arrange icons';tbh.style.display=arr?'block':'none'}
   bar.addEventListener('click',function(e){var b=e.target.closest('button');if(!b&&arr&&e.target===bar){btns().forEach(function(x){var r=x.getBoundingClientRect();if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom)b=x})}if(!b)return;
@@ -1531,70 +1575,83 @@ setTimeout(goToday,50);
 var MN=['January','February','March','April','May','June','July','August','September','October','November','December'],WD=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 function F(){return RO.f||{}}
 function lab(ym){var p=ym.split('-');return MN[+p[1]-1]+' '+p[0]}
-function rng(ym){var p=ym.split('-'),y=+p[0],m=+p[1];return{s:new Date(y,m-2,26),e:new Date(y,m-1,25)}}
-function rtxt(ym){var r=rng(ym);return r.s.getDate()+' '+MN[r.s.getMonth()].slice(0,3)+' → '+r.e.getDate()+' '+MN[r.e.getMonth()].slice(0,3)+' '+r.e.getFullYear()}
-function dl(ym){var r=rng(ym),a=[],d=new Date(r.s);while(d<=r.e){a.push(new Date(d));d.setDate(d.getDate()+1)}return a}
-function sg(d,s){return(F().ap||{})[key(d)+'_'+s]||{}}
 function ds(d){return WD[d.getDay()]+' '+d.getDate()+' '+MN[d.getMonth()].slice(0,3)}
-function miss(ym){var o=[];dl(ym).forEach(function(d){['d','n'].forEach(function(s){var g=sg(d,s),n=[];if(!g.m)n.push('manager');if(!g.s)n.push('supervisor');if(n.length)o.push({d:d,s:s,n:n})})});return o}
+function sg(d,s){return(F().ap||{})[key(d)+'_'+s]||{}}
 var Q=Promise.resolve();function enq(f){Q=Q.then(f,f);return Q}
-function dref(k){return DB.collection('data/users/'+UID).doc('arc-'+k)}
-function put(k,u){if(DB)return dref(k).set({img:u,t:Date.now()});localStorage.setItem('s5_arc_'+k,u);return Promise.resolve()}
-function get(k){if(DB)return dref(k).get().then(function(q){return q.exists?(q.data()||{}).img:null});var v=null;try{v=localStorage.getItem('s5_arc_'+k)}catch(e){}return Promise.resolve(v)}
-function del(k){try{if(DB)return dref(k).delete();localStorage.removeItem('s5_arc_'+k)}catch(e){}return Promise.resolve()}
 function setF(o){RO.f=Object.assign({},RO.f,o);saveRO()}
 function load(us){return Promise.all(us.map(function(u){return new Promise(function(r){if(!u)return r();var i=PPI[u];if(i&&i.complete&&i.naturalWidth)return r();i=new Image();i.onload=i.onerror=function(){r()};i.src=u;PPI[u]=i})}))}
-function build(d){var oD=RCD,oR=RC,k=key(d);
-  function back(){RCD=oD;RC=oR}
-  return cellsOf(d).then(function(c){RCD=new Date(d);RCD.setHours(0,0,0,0);RC=rcCalc(c,RCD);
-    var us=[];['d','n'].forEach(function(s){['m','s'].forEach(function(w){us.push(ppSig(ppRole(s,w)))})});return load(us)}).then(function(){
-    var site=F().site==null?'لاندمارك':F().site,a=ppForm(RC.d,'d',site,'صباحية'),b=ppForm(RC.n,'n',site,'ليلية'),W=2200,H=1556,cv=document.createElement('canvas');
+function shrink(cv,W,H,q){var c=document.createElement('canvas');c.width=W;c.height=H;var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,H);x.imageSmoothingQuality='high';x.drawImage(cv,0,0,W,H);var u=c.toDataURL('image/jpeg',q);c.width=c.height=0;cv.width=cv.height=0;return u}
+function mk(C){
+function rng(ym){return C.rng(ym)}
+function dl(ym){var r=rng(ym),a=[],d=new Date(r.s);while(d<=r.e){a.push(new Date(d));d.setDate(d.getDate()+1)}return a}
+function rtxt(ym){var r=rng(ym);return r.s.getDate()+' '+MN[r.s.getMonth()].slice(0,3)+' → '+r.e.getDate()+' '+MN[r.e.getMonth()].slice(0,3)+' '+r.e.getFullYear()}
+function miss(ym){var o=[];dl(ym).forEach(function(d){['d','n'].forEach(function(s){if(!C.signed(d,s))o.push({d:d,s:s,n:C.need(sg(d,s))})})});return o}
+function dref(k){return DB.collection('data/users/'+UID).doc(C.doc+k)}
+function put(k,u){return dref(k).set({img:u,t:Date.now()})}
+function get(k){return dref(k).get().then(function(q){return q.exists?(q.data()||{}).img:null})}
+function del(k){return dref(k).delete().catch(function(){})}
+function locked(ym){return!!(F()[C.lock]||{})[ym]}
+function build(d){var o={D:RCD,R:RC,F:RCF,M:RCM};PSC=1.4;TSC=1.6;function back(){RCD=o.D;RC=o.R;RCF=o.F;RCM=o.M;PSC=2;TSC=2}
+  return cellsOf(d).then(function(c){RCD=new Date(d);RCD.setHours(0,0,0,0);RC=rcCalc(c,RCD);RCF=C.rcf;RCM='b';
+    var us=[];['d','n'].forEach(function(s){C.roles.forEach(function(w){us.push(ppSig(ppRole(s,w)))})});return load(us)}).then(function(){var u=C.page(d);back();return u},function(e){back();throw e})}
+function savePage(d){var k=key(d);return build(d).then(function(u){return put(k,u)}).then(function(){var p=Object.assign({},F()[C.idx]);p[k]=1;var z={};z[C.idx]=p;setF(z)})}
+function dropPage(d){var k=key(d),p=Object.assign({},F()[C.idx]);delete p[k];var z={};z[C.idx]=p;setF(z);return del(k)}
+function backfill(ym){var ar=F()[C.idx]||{},need=dl(ym).filter(function(d){return C.ready(d)&&!ar[key(d)]});
+  return need.reduce(function(p,d){return p.then(function(){return enq(function(){return savePage(d)})})},Promise.resolve())}
+function alertM(ym,m){var g={},o=[];m.forEach(function(q){var k=key(q.d);if(!g[k]){g[k]={d:q.d,s:q.s,t:[]};o.push(g[k])}g[k].t.push((q.s=='d'?'Day':'Night')+': '+q.n.join(' + ')+' not signed')});
+  var h='<b style="color:#d64545">⛔ '+C.name+' month PDF blocked — '+lab(ym)+'</b><div class="lb" style="font-size:13px;margin:6px 0">These shifts are not signed by '+C.who+'. The PDF for '+rtxt(ym)+' cannot be created until every one is signed ('+m.length+' shift'+(m.length>1?'s':'')+').</div>';
+  o.forEach(function(q){h+='<div class="rr" data-a="'+C.pre+'g" data-k="'+key(q.d)+'" style="cursor:pointer;flex-direction:column;align-items:flex-start;gap:2px"><b>'+ds(q.d)+' '+q.d.getFullYear()+'</b><span class="lb" style="font-size:12px">'+q.t.join('  ·  ')+'</span></div>'});
+  sheet(h+'<div class="bar"><button data-a="'+C.pre+'c" data-ym="'+ym+'">Check again</button><button data-a="x">Close</button></div>')}
+function ended(ym){var r=rng(ym),t=new Date();t.setHours(0,0,0,0);return t>=r.e}
+function check(d,manual,ym0){var ym=ym0||C.ymOf(d),r=rng(ym);
+  if(!manual){if(!C.signed(r.e,'n'))return;var m0=miss(ym);if(m0.length){if(d&&key(d)==key(r.e))alertM(ym,m0);else err('⏳ '+C.name+' '+lab(ym)+': '+m0.length+' shift'+(m0.length>1?'s':'')+' still not signed','#d2691e',5000)}else err('✅ '+C.name+' '+lab(ym)+' is fully signed — open the archive and tap “Save month PDF”','#2f9e5b',6000);return}
+  if(!ended(ym)){sheet('<b style="color:#d64545">⛔ Month didn’t end</b><div class="lb" style="font-size:13px;margin:6px 0">'+C.name+' '+lab(ym)+' runs '+rtxt(ym)+'. The month PDF can be saved only when the last day is reached and every shift is signed.</div><div class="bar"><button data-a="'+C.pre+'f" data-ym="'+ym+'">Back to folder</button><button data-a="x">Close</button></div>');return}
+  var m=miss(ym);if(m.length){alertM(ym,m);return}
+  pdf(ym)}
+function after(d){setTimeout(function(){check(d)},200)}
+var view=null;
+function folderList(){var ym={},f=F();Object.keys(C.src()).forEach(function(k){var d=new Date(k.slice(0,10)+'T12:00:00');if(!isNaN(d))ym[C.ymOf(d)]=1});ym[C.cur()]=1;return Object.keys(ym).sort().reverse()}
+function home(){view={t:'h'};var h='<b>📁 '+C.name+' archive</b><div class="lb" style="font-size:12px;margin:6px 0">'+C.intro+'</div>';
+  folderList().forEach(function(k){var n=dl(k).filter(function(d){return C.ready(d)}).length;h+='<div class="rr" data-a="'+C.pre+'f" data-ym="'+k+'" style="cursor:pointer"><span>📁 '+lab(k)+'</span><span class="lb">'+n+'/'+dl(k).length+' days locked 🔒</span></div>'});
+  sheet(h+'<div class="bar">'+(C.extra||'')+'<button data-a="x">Close</button></div>')}
+function folder(ym){view={t:'f',ym:ym};var h='<b>📁 '+lab(ym)+'</b><div class="lb" style="font-size:12px;margin:4px 0 8px">'+C.name+' · '+rtxt(ym)+'</div>';
+  dl(ym).forEach(function(d){var k=key(d),g=['d','n'].map(function(s){return(s=='d'?'Day':'Night')+(C.signed(d,s)?' 🔒':' ⛔')});
+    h+='<div class="rr" data-a="'+C.pre+'g" data-k="'+k+'" style="cursor:pointer"><span>'+ds(d)+'</span><span class="lb">'+(C.ready(d)?'🔒 Day · Night':g.join(' · '))+'</span></div>'});
+  sheet(h+'<div class="bar"><button data-a="'+C.pre+'c" data-ym="'+ym+'">📄 Save month PDF</button><button data-a="'+C.pre+'h">Back</button><button data-a="x">Close</button></div>')}
+function pdf(ym){if(!window.jspdf||!DL){err('PDF is not available yet');return}
+  var doc=new window.jspdf.jsPDF({orientation:'landscape',unit:'mm',format:'a4'}),days=dl(ym),n=0;
+  err('Building the PDF… 0/'+days.length,'#2f6fed',60000);
+  days.reduce(function(p,d){return p.then(function(){return build(d)}).then(function(u){if(n)doc.addPage();doc.addImage(u,'JPEG',0,0,297,210);n++;err('Building the PDF… '+n+'/'+days.length,'#2f6fed',60000);return new Promise(function(r){setTimeout(r,120)})})},Promise.resolve()).then(function(){
+    var b=doc.output('blob');err('✅ PDF ready','#2f9e5b',2500);DL.save({filename:C.file+lab(ym).replace(' ','_')+'.pdf',data:b}).catch(function(e){if(!e||e.code!='declined')err('Could not save the PDF')})},function(){err('Could not build the PDF','#d64545',4000)})}
+window[C.pre+'Act']=function(a,b){var ym=b.dataset.ym,p=C.pre;
+  if(a==p+'f')folder(ym);else if(a==p+'h')home();else if(a==p+'g'){var d=new Date(b.dataset.k+'T12:00:00');d.setHours(0,0,0,0);RCD=d;RCM='b';RCF=C.rcf;RC=null;rcSheet()}
+  else if(a==p+'c')check(null,true,ym)};
+return{home:home,after:after,locked:function(){return false}}}
+var SN=function(d,s){return(F().snap||{})[key(d)+'_'+s]};
+var P=mk({pre:'arx',name:'Roll-call',idx:'arp',lock:'arm',doc:'arc-',ls:'s5_arc_',rcf:'p',roles:['m','s'],where:'Archive icon',file:'Gangahoria_Archive_',
+  who:'both the manager and the supervisor',lastTxt:'the 25th',intro:'One folder per month (26th → 25th) listing the original papers locked 🔒 when both signed. At the end of the month, save them as one PDF.',
+  extra:'<button data-a="arxd">Roll-call days list</button>',
+  ymOf:function(d){return pidOf(d)},cur:function(){return pid()},src:function(){return F().snap||{}},
+  rng:function(ym){var p=ym.split('-'),y=+p[0],m=+p[1];return{s:new Date(y,m-2,26),e:new Date(y,m-1,25)}},
+  signed:function(d,s){var g=sg(d,s);return!!(g.m&&g.s)},need:function(g){var n=[];if(!g.m)n.push('manager');if(!g.s)n.push('supervisor');return n},
+  ready:function(d){return!!(SN(d,'d')&&SN(d,'n'))},
+  page:function(d){var site=F().site==null?'لاندمارك':F().site,a=ppForm(RC.d,'d',site,'صباحية'),b=ppForm(RC.n,'n',site,'ليلية'),W=2000,H=1414,cv=document.createElement('canvas');
     cv.width=W;cv.height=H;var x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,H);var th=H-70;
     function p2(p,cx){var tw=p.cv.width*th/p.cv.height;x.drawImage(p.cv,cx-tw/2,52,tw,th)}
-    p2(b,W*0.27);p2(a,W*0.73);x.fillStyle='#444';x.font='bold 28px Tahoma, Arial';x.textAlign='center';x.textBaseline='middle';
-    x.fillText('Gangahoria · '+lab(pidOf(d))+' · '+ds(d)+' · Night (left) · Day (right)',W/2,28);
-    var u=cv.toDataURL('image/jpeg',0.72);back();return u},function(e){back();throw e})}
-function savePage(d){var k=key(d);return build(d).then(function(u){return put(k,u)}).then(function(){var p=Object.assign({},F().arp);p[k]=1;setF({arp:p})})}
-function dropPage(d){var k=key(d),p=Object.assign({},F().arp);delete p[k];setF({arp:p});return del(k)}
-function locked(ym){return!!(F().arm||{})[ym]}
-function backfill(ym){var sn=F().snap||{},ar=F().arp||{},need=dl(ym).filter(function(d){var k=key(d);return sn[k+'_d']&&sn[k+'_n']&&!ar[k]});
-  return need.reduce(function(p,d){return p.then(function(){return enq(function(){return savePage(d)})})},Promise.resolve())}
-function alertM(ym,m){var g={},o=[];m.forEach(function(q){var k=key(q.d);if(!g[k]){g[k]={d:q.d,t:[]};o.push(g[k])}g[k].t.push((q.s=='d'?'Day':'Night')+': '+q.n.join(' + ')+' not signed')});
-  var h='<b style="color:#d64545">⛔ Archive blocked — '+lab(ym)+'</b><div class="lb" style="font-size:13px;margin:6px 0">The night shift of the 25th is signed, but these shifts are not signed by both the manager and the supervisor. The archive for '+rtxt(ym)+' cannot be created until every one is signed ('+m.length+' shift'+(m.length>1?'s':'')+').</div>';
-  o.forEach(function(q){h+='<div class="rr" data-a="arg" data-k="'+key(q.d)+'_'+(q.t[0].indexOf('Day')==0?'d':'n')+'" style="cursor:pointer;flex-direction:column;align-items:flex-start;gap:2px"><b>'+ds(q.d)+' '+q.d.getFullYear()+'</b><span class="lb" style="font-size:12px">'+q.t.join('  ·  ')+'</span></div>'});
-  sheet(h+'<div class="bar"><button data-a="arxc" data-ym="'+ym+'">Check again</button><button data-a="x">Close</button></div>')}
-function finalize(ym){if(locked(ym))return Promise.resolve();
-  return backfill(ym).then(function(){var ar=F().arp||{},no=dl(ym).filter(function(d){return!ar[key(d)]});if(no.length)throw new Error('pages');
-    var m=Object.assign({},F().arm);m[ym]={t:Date.now()};setF({arm:m});
-    sheet('<b>🔐 '+lab(ym)+' archive is complete and locked</b><div class="lb" style="font-size:13px;margin:6px 0">Every day and night shift of '+rtxt(ym)+' is signed by the manager and the supervisor. The month PDF is ready in the Archive icon, in the folder “'+lab(ym)+'”.</div><div class="bar"><button data-a="arxf" data-ym="'+ym+'">Open folder</button><button data-a="x">Close</button></div>')})}
-function check(d,manual,ym0){var ym=ym0||pidOf(d),r=rng(ym);if(locked(ym)){if(manual)folder(ym);return Promise.resolve()}
-  var l=sg(r.e,'n');if(!(l.m&&l.s)&&!manual)return Promise.resolve();
-  var m=miss(ym);
-  if(m.length){if(manual||(d&&key(d)==key(r.e)))alertM(ym,m);else err('⏳ '+lab(ym)+': '+m.length+' shift'+(m.length>1?'s':'')+' still not signed by both','#d2691e',5000);return Promise.resolve()}
-  return finalize(ym).catch(function(){err('Could not save every day in the archive - open the Archive icon and check again','#d64545',5000)})}
-function after(d){var k=key(d),sn=F().snap||{},both=sn[k+'_d']&&sn[k+'_n'],has=(F().arp||{})[k];
-  if(both&&!has)enq(function(){return savePage(d)}).then(function(){return check(d)},function(){err('Could not save this day in the archive','#d64545',4000)});
-  else if(!both&&has)dropPage(d);else check(d)}
+    p2(b,W*0.27);p2(a,W*0.73);a.cv.width=a.cv.height=0;b.cv.width=b.cv.height=0;x.fillStyle='#444';x.font='bold 28px Tahoma, Arial';x.textAlign='center';x.textBaseline='middle';
+    x.fillText('Gangahoria · '+lab(pidOf(d))+' · '+ds(d)+' · Night (left) · Day (right)',W/2,28);var u=cv.toDataURL('image/jpeg',0.8);cv.width=cv.height=0;return u}});
+var L=mk({pre:'alx',name:'Landmark',idx:'alp',lock:'alm',doc:'arl-',ls:'s5_arl_',rcf:'t',roles:['m'],where:'Landmark archive icon',file:'Gangahoria_Landmark_',
+  who:'the manager',lastTxt:'the last day of the month',intro:'التمام اليومي للاندمارك — one folder per calendar month (day 1 → last day). Days signed by the manager on both shifts are listed here. At the end of the month, save them as one PDF.',
+  src:function(){return F().ap||{}},ymOf:function(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)},cur:function(){var n=new Date();return n.getFullYear()+'-'+pad(n.getMonth()+1)},
+  rng:function(ym){var p=ym.split('-'),y=+p[0],m=+p[1];return{s:new Date(y,m-1,1),e:new Date(y,m,0)}},
+  signed:function(d,s){return!!sg(d,s).m},need:function(){return['manager']},
+  ready:function(d){return!!(sg(d,'d').m&&sg(d,'n').m)},
+  page:function(d){return shrink(tmDraw(),2000,1414,0.8)}});
 var _ap=window.ppSetAp;window.ppSetAp=function(s,w,on){var d=new Date(RCD);
-  if(!on&&locked(pidOf(d))){err('🔐 This month is locked in the archive — its signatures can’t be removed','#d64545',4500);return}
-  _ap(s,w,on);setTimeout(function(){after(d)},60)};
-function home(){var ym={},f=F();Object.keys(f.arp||{}).forEach(function(k){ym[pidOf(new Date(k+'T12:00:00'))]=1});Object.keys(f.arm||{}).forEach(function(k){ym[k]=1});ym[pid()]=1;
-  var a=Object.keys(ym).sort().reverse(),h='<b>📁 Archive</b><div class="lb" style="font-size:12px;margin:6px 0">One folder per month (26th → 25th). Each fully signed day is kept here; when the whole month is signed it is locked 🔐 as one PDF.</div>';
-  a.forEach(function(k){var n=dl(k).filter(function(d){return(F().arp||{})[key(d)]}).length;h+='<div class="rr" data-a="arxf" data-ym="'+k+'" style="cursor:pointer"><span>📁 '+lab(k)+'</span><span class="lb">'+(locked(k)?'🔐 ':'')+n+'/'+dl(k).length+' days</span></div>'});
-  sheet(h+'<div class="bar"><button data-a="arxd">Roll-call days list</button><button data-a="x">Close</button></div>')}
-function folder(ym){var ar=F().arp||{},h='<b>📁 '+lab(ym)+(locked(ym)?' 🔐':'')+'</b><div class="lb" style="font-size:12px;margin:4px 0 8px">'+rtxt(ym)+'</div>';
-  dl(ym).forEach(function(d){var k=key(d),ok=ar[k],g=[];['d','n'].forEach(function(s){var q=sg(d,s);if(!(q.m&&q.s))g.push((s=='d'?'Day':'Night')+' ⛔')});
-    h+='<div class="rr" data-a="arg" data-k="'+k+'_d" style="cursor:pointer"><span>'+ds(d)+'</span><span class="lb">'+(ok?'✓ saved':(g.length?g.join(' · '):'ready'))+'</span></div>'});
-  h+='<div class="bar">'+(locked(ym)?'<button data-a="arxp" data-ym="'+ym+'">📄 Save PDF (locked)</button>':'<button data-a="arxc" data-ym="'+ym+'">Check &amp; lock month</button>')+'<button data-a="arxh">Back</button><button data-a="x">Close</button></div>';sheet(h)}
-function pdf(ym){if(!window.jspdf||!DL){err('PDF is not available yet');return}err('Building the PDF…','#2f6fed',3000);
-  var ds2=dl(ym),doc=new window.jspdf.jsPDF({orientation:'landscape',unit:'mm',format:'a4'}),first=true;
-  ds2.reduce(function(p,d){return p.then(function(){return get(key(d))}).then(function(u){if(!u)return;if(!first)doc.addPage();first=false;doc.addImage(u,'JPEG',0,0,297,210)})},Promise.resolve()).then(function(){
-    var b=doc.output('blob');DL.save({filename:'Gangahoria_Archive_'+lab(ym).replace(' ','_')+'.pdf',data:b}).catch(function(e){if(!e||e.code!='declined')err('Could not save the PDF')})},function(){err('Could not build the PDF')})}
-window.arxAct=function(a,b){var ym=b.dataset.ym;
-  if(a=='arxf')folder(ym);else if(a=='arxh')home();else if(a=='arxd')window.arDays();
-  else if(a=='arxc'){backfill(ym).then(function(){check(null,true,ym)},function(){check(null,true,ym)})}
-  else if(a=='arxp')pdf(ym)};
-window.arDays=window.arOpen;window.arOpen=home;
+  if(!on){if(P.locked(pidOf(d))){err('🔐 This month is locked in the Roll-call archive — its signatures can’t be removed','#d64545',4500);return}
+    if(w=='m'&&L.locked(d.getFullYear()+'-'+pad(d.getMonth()+1))){err('🔐 This month is locked in the Landmark archive — its signatures can’t be removed','#d64545',4500);return}}
+  _ap(s,w,on);setTimeout(function(){P.after(d);L.after(d)},60)};
+window.arDays=window.arOpen;window.arOpen=P.home;window.alOpen=L.home;
 })();
 </script>
 
