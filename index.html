@@ -3,7 +3,7 @@
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
-<title>Gangahoria v46</title><link rel="icon" type="image/png" href="icon.png">
+<title>Gangahoria v46</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -111,11 +111,47 @@ function plist(){var a=[];G.forEach(function(g,gi){g[1].forEach(function(p){a.pu
 function nm(p){var e=RO.e&&RO.e[p[3]];return e?[e.n,e.r,p[2],p[3]]:p}
 function lay(){var o=G.map(function(g){return[g[0],[]]});plist().forEach(function(x){var p=x[0];if(RO.h[p[3]]||resGone(p[3],key(days()[0])))return;var g=RO.g[p[3]];o[g==null?x[1]:g][1].push(nm(p))});o.forEach(function(g,gi){var l=RO.o&&RO.o[gi];if(l){var a=g[1].map(function(p,i){return[p,i]});a.sort(function(x,y){var i=l.indexOf(x[0][3]),j=l.indexOf(y[0][3]);i=i<0?1e6+x[1]:i;j=j<0?1e6+y[1]:j;return i-j});g[1]=a.map(function(x){return x[0]})}});var DL0=days(),b0=key(DL0[DL0.length-1]);o.forEach(function(g,gi){var a=g[1].map(function(p,i){var c=RO.c[p[3]]||{},e=(c.rs&&c.rz)?(c.rs<c.rz?c.rs:c.rz):(c.rs||c.rz);return[p,i,e&&e<=b0?1:0]});a.sort(function(x,y){if(x[2]!=y[2])return x[2]-y[2];if(!x[2]&&(gi==2||gi==3)){var kx=+((RO.c[x[0][3]]||{}).k)||1e15,ky=+((RO.c[y[0][3]]||{}).k)||1e15;if(kx!=ky)return kx-ky}return x[1]-y[1]});g[1]=a.map(function(x){return x[0]})});return o}
 function err(m,c,t){var e=$("er");e.textContent=m;e.style.background=c||"#d64545";e.style.display="block";clearTimeout(erT);erT=setTimeout(function(){e.style.display="none"},t||3000)}
+var ROK=false,RSAVED={},MIGRO=null;
+function jchunks(s){var a=[];for(var i=0;i<s.length;i+=250000)a.push(s.slice(i,i+250000));return a.length?a:[""]}
+function pname(k){return String(k).replace(/[^A-Za-z0-9_-]/g,"_")}
+function roParts(){
+  var p={m:{h:RO.h||{},g:RO.g||{},a:RO.a||[],e:RO.e||{},o:RO.o||{},c:RO.c||{}},fm:RO.fm||[]},f=RO.f||{};
+  Object.keys(f).forEach(function(k){p["f_"+pname(k)]={k:k,v:f[k]}});
+  return p}
 function saveRO(){
-  chain=chain.then(function(){return DB.collection("data/users/"+UID).doc("roster").set({h:RO.h,g:RO.g,a:RO.a,e:RO.e,o:RO.o,c:RO.c,f:RO.f||{},fm:RO.fm||[]})}).then(function(){st("☁ Saved","#2f9e5b")},function(){st("⚠ Not saved - check your connection","#d64545")});
+  if(!ROK){st("⚠ Not saved - data was not loaded, reopen the app","#d64545");return}
+  var parts=roParts(),writes=[],man={v:2,p:{}},keep={};
+  Object.keys(parts).forEach(function(n){var cs=jchunks(JSON.stringify(parts[n]));man.p[n]=cs.length;cs.forEach(function(c,i){var id="r-"+n+"-"+i;keep[id]=1;writes.push([id,c])})});
+  var ms=JSON.stringify(man);
+  chain=chain.then(function(){
+    var col=DB.collection("data/users/"+UID),ps=[];
+    writes.forEach(function(w){if(RSAVED[w[0]]!==w[1])ps.push(col.doc(w[0]).set({j:w[1]}).then(function(){RSAVED[w[0]]=w[1]}))});
+    return Promise.all(ps).then(function(){
+      if(RSAVED.roster===ms)return;
+      return col.doc("roster").set(man).then(function(){RSAVED.roster=ms})
+    }).then(function(){
+      var old=Object.keys(RSAVED).filter(function(k){return k.indexOf("r-")==0&&!keep[k]});
+      return Promise.all(old.map(function(k){return col.doc(k).delete().then(function(){delete RSAVED[k]})}))
+    })
+  }).then(function(){st("☁ Saved","#2f9e5b")},function(){st("⚠ Not saved - check your connection","#d64545")});
 }
 function loadRO(){
-  return DB.collection("data/users/"+UID).doc("roster").get().then(function(s){if(s.exists){var d=s.data()||{};d=JSON.parse(JSON.stringify(d));RO={h:d.h||{},g:d.g||{},a:d.a||[],e:d.e||{},o:d.o||{},c:d.c||{},f:d.f||{},fm:d.fm||[]}}},function(){});
+  var col=DB.collection("data/users/"+UID);
+  return col.doc("roster").get().then(function(s){
+    if(!s.exists){ROK=true;return}
+    var d=JSON.parse(JSON.stringify(s.data()||{}));
+    if(d.v!=2){RO={h:d.h||{},g:d.g||{},a:d.a||[],e:d.e||{},o:d.o||{},c:d.c||{},f:d.f||{},fm:d.fm||[]};ROK=true;return}
+    var ids=[];Object.keys(d.p||{}).forEach(function(n){for(var i=0;i<d.p[n];i++)ids.push([n,i])});
+    return Promise.all(ids.map(function(x){return col.doc("r-"+x[0]+"-"+x[1]).get()})).then(function(qs){
+      var str={};
+      qs.forEach(function(q,i){var x=ids[i];if(!q.exists)throw new Error("missing part");var j=(q.data()||{}).j||"";RSAVED["r-"+x[0]+"-"+x[1]]=j;str[x[0]]=(str[x[0]]||"")+j});
+      var P={};Object.keys(str).forEach(function(n){P[n]=JSON.parse(str[n])});
+      var m=P.m||{},f={};
+      Object.keys(P).forEach(function(n){if(n.indexOf("f_")==0&&P[n]&&P[n].k!=null)f[P[n].k]=P[n].v});
+      RO={h:m.h||{},g:m.g||{},a:m.a||[],e:m.e||{},o:m.o||{},c:m.c||{},f:f,fm:P.fm||[]};
+      ROK=true;
+    })
+  }).catch(function(){ROK=false;err("Could not load names and contact cards - check your connection and reopen the app","#d64545",8000)});
 }
 function extra(t){return Math.max(0,5-t.V)+t.DS}
 function updUndo(){var b=$("un");if(b){b.disabled=!hist.length;b.style.opacity=hist.length?1:.4}}
@@ -379,11 +415,22 @@ function cardV(id){
   sheet(h+'<div id="cdocs"></div>'+(m?'':'<button data-a="ce">📞 Add number</button>')+(id=='m1'?'<button data-a="adv_go">💵 Advances sheet (كشف السلف)</button><button data-a="sp_go">👥 Staff PDF</button><button data-a="lb_go">🏖 Leave balance</button>':'')+'<button data-a="m_home">🗂 Archived forms ('+(RO.fm||[]).filter(function(q){return q.i==id}).length+')</button>'+'<button data-a="ce">Edit card</button><button data-a="po">More</button><button data-a="cl">All cards</button><button data-a="x">Close</button></div>');
 }
 var DOCS={};
+function docWrite(id,a){
+  var col=DB.collection("data/users/"+UID),cs=jchunks(JSON.stringify(a||[])),ps=[];
+  for(var i=1;i<cs.length;i++)ps.push(col.doc("docs-"+id+"~"+i).set({j:cs[i]}));
+  return Promise.all(ps).then(function(){return col.doc("docs-"+id).set({n:cs.length,j:cs[0]})})}
 function docsGet(id){if(DOCS[id])return Promise.resolve(DOCS[id]);
-  return DB.collection("data/users/"+UID).doc("docs-"+id).get().then(function(q){var d=q.exists?JSON.parse(JSON.stringify(q.data()||{})):{};DOCS[id]=d.l||[];return DOCS[id]},function(){DOCS[id]=[];return DOCS[id]});
+  var col=DB.collection("data/users/"+UID);
+  return col.doc("docs-"+id).get().then(function(q){
+    var d=q.exists?JSON.parse(JSON.stringify(q.data()||{})):{};
+    if(d.l){DOCS[id]=d.l;return DOCS[id]}
+    var n=d.n||(d.j!=null?1:0);if(!n){DOCS[id]=[];return DOCS[id]}
+    var ps=[];for(var i=1;i<n;i++)ps.push(col.doc("docs-"+id+"~"+i).get());
+    return Promise.all(ps).then(function(qs){var s=d.j||"";qs.forEach(function(x){s+=((x.data()||{}).j||"")});DOCS[id]=JSON.parse(s||"[]");return DOCS[id]})
+  },function(){DOCS[id]=[];return DOCS[id]});
 }
 function docsPut(id,a){DOCS[id]=a;
-  return DB.collection("data/users/"+UID).doc("docs-"+id).set({l:a}).then(function(){st("☁ Saved","#2f9e5b")},function(){st("⚠ Not saved - check your connection","#d64545");err("Could not save the document")});
+  return docWrite(id,a).then(function(){st("☁ Saved","#2f9e5b")},function(){st("⚠ Not saved - check your connection","#d64545");err("Could not save the document")});
 }
 function docsShrink(f){return new Promise(function(ok,no){var u=URL.createObjectURL(f),im=new Image();im.onload=function(){var k=Math.min(1,1100/Math.max(im.width,im.height)),cv=document.createElement("canvas");cv.width=Math.round(im.width*k);cv.height=Math.round(im.height*k);cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);URL.revokeObjectURL(u);ok(cv.toDataURL("image/jpeg",.7))};im.onerror=function(){no(new Error("img"))};im.src=u})}
 function docsDraw(id){var bx=$("cdocs");if(!bx)return;docsGet(id).then(function(a){bx=$("cdocs");if(!bx||SID!=id)return;
@@ -1514,9 +1561,9 @@ function migrate(){
     for(var i=0;i<localStorage.length;i++){
       var k=localStorage.key(i),v=localStorage.getItem(k),m;
       if(!k||k.indexOf("s5_")!=0||!v)continue;
-      if(k=="s5_roster"){put("roster",JSON.parse(v))}
+      if(k=="s5_roster"){(function(vv){jobs.push(col.doc("roster").get().then(function(q){if(!q.exists)MIGRO=JSON.parse(vv)}))})(v)}
       else if(/^s5_\d{4}-\d{2}$/.test(k)){put("p-"+k.slice(3),{c:JSON.parse(v)})}
-      else if((m=k.match(/^s5_docs_(.+)$/))){put("docs-"+m[1],{l:JSON.parse(v)})}
+      else if((m=k.match(/^s5_docs_(.+)$/))){(function(id,vv){jobs.push(col.doc("docs-"+id).get().then(function(q){if(!q.exists)return docWrite(id,JSON.parse(vv))}))})(m[1],v)}
       else if((m=k.match(/^s5_(arc|arl)_(.+)$/))){put(m[1]+"-"+m[2],{img:v,t:Date.now()})}
     }
   }catch(e){}
@@ -1525,7 +1572,7 @@ function migrate(){
 function start(user){
   UID=user.uid;DB=firebase.firestore();
   $("lg").style.display="none";
-  migrate().then(function(){return loadRO()}).then(function(){jsApply();return load()}).then(function(){goToday();setTimeout(goToday,300)});
+  migrate().then(function(){return loadRO()}).then(function(){if(ROK&&MIGRO){var t=MIGRO;MIGRO=null;RO={h:t.h||{},g:t.g||{},a:t.a||[],e:t.e||{},o:t.o||{},c:t.c||{},f:t.f||{},fm:t.fm||[]};saveRO()}jsApply();return load()}).then(function(){goToday();setTimeout(goToday,300)});
 }
 (function(){
   var lgb=$("lgb");
