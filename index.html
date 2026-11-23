@@ -419,7 +419,8 @@ function docWrite(id,a){
   var col=DB.collection("data/users/"+UID),cs=jchunks(JSON.stringify(a||[])),ps=[];
   for(var i=1;i<cs.length;i++)ps.push(col.doc("docs-"+id+"~"+i).set({j:cs[i]}));
   return Promise.all(ps).then(function(){return col.doc("docs-"+id).set({n:cs.length,j:cs[0]})})}
-function docsGet(id){if(DOCS[id])return Promise.resolve(DOCS[id]);
+var DOCFAIL={};
+function docsGet(id){if(DOCS[id])return Promise.resolve(DOCS[id]);delete DOCFAIL[id];
   var col=DB.collection("data/users/"+UID);
   return col.doc("docs-"+id).get().then(function(q){
     var d=q.exists?JSON.parse(JSON.stringify(q.data()||{})):{};
@@ -427,9 +428,9 @@ function docsGet(id){if(DOCS[id])return Promise.resolve(DOCS[id]);
     var n=d.n||(d.j!=null?1:0);if(!n){DOCS[id]=[];return DOCS[id]}
     var ps=[];for(var i=1;i<n;i++)ps.push(col.doc("docs-"+id+"~"+i).get());
     return Promise.all(ps).then(function(qs){var s=d.j||"";qs.forEach(function(x){s+=((x.data()||{}).j||"")});DOCS[id]=JSON.parse(s||"[]");return DOCS[id]})
-  },function(){DOCS[id]=[];return DOCS[id]});
+  },function(){DOCFAIL[id]=1;err("Could not load the documents - check your connection");return[]});
 }
-function docsPut(id,a){DOCS[id]=a;
+function docsPut(id,a){if(DOCFAIL[id]){err("Documents were not loaded - close and reopen the card, then try again");return Promise.resolve()}DOCS[id]=a;
   return docWrite(id,a).then(function(){st("☁ Saved","#2f9e5b")},function(){st("⚠ Not saved - check your connection","#d64545");err("Could not save the document")});
 }
 function docsShrink(f){return new Promise(function(ok,no){var u=URL.createObjectURL(f),im=new Image();im.onload=function(){var k=Math.min(1,1100/Math.max(im.width,im.height)),cv=document.createElement("canvas");cv.width=Math.round(im.width*k);cv.height=Math.round(im.height*k);cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);URL.revokeObjectURL(u);ok(cv.toDataURL("image/jpeg",.7))};im.onerror=function(){no(new Error("img"))};im.src=u})}
@@ -1225,9 +1226,9 @@ function atPage(ims){var W=1240,H=1754,m=70,g=40,cv=document.createElement('canv
     else{atDraw(x,ims[0],W-m-pw,m,pw,ph,1);atDraw(x,ims[1],m,m,pw,ph,1)}}
   return cv}
 function atPagesOf(A){var p=[],i;for(i=0;i<A.length;i+=2)p.push(atPage(A.slice(i,i+2)));return p}
-var FMCD=[],FMCDid=null;
-function fmAtCvs(){return atPagesOf(FMAT.concat(FM&&FM.v&&FM.v.cd&&FMCDid==FM.id?FMCD:[]))}
-function fmCdLoad(id){if(FMCDid==id)return;FMCDid=id;FMCD=[];docsGet(id).then(function(a){return Promise.all(a.map(function(u){return new Promise(function(ok){var im=new Image();im.onload=function(){ok(im)};im.onerror=function(){ok(null)};im.src=u})}))}).then(function(r){if(FMCDid!=id)return;FMCD=r.filter(Boolean);if(FM&&FM.id==id)fmRender()})}
+var FMCD=[],FMCDid=null,FMCDo=null;
+function fmAtCvs(){return atPagesOf(FMAT.concat(FM&&FM.v&&FM.v.cd&&FMCDo==FM.id?FMCD:[]))}
+function fmCdLoad(id){FMCDid=id;docsGet(id).then(function(a){return Promise.all(a.map(function(u){return new Promise(function(ok){var im=new Image();im.onload=function(){ok(im)};im.onerror=function(){ok(null)};im.src=u})}))}).then(function(r){if(FMCDid!=id)return;FMCD=r.filter(Boolean);FMCDo=id;if(FM&&FM.id==id)fmRender()})}
 function fmCd(e){FM.v.cd=e.checked?1:0;if(e.checked)fmCdLoad(FM.id);fmRender();if(FM.h!=null){clearTimeout(FMT);FMT=setTimeout(function(){fmRec(FM.st)},800)}}
 function idLoad(f){if(!f)return;shrink(f).then(function(b){var im=new Image();im.onload=function(){FMID[IDS]=im;fmEdit()};im.onerror=function(){err("Could not read the photo")};im.src=URL.createObjectURL(b)},function(){err("Could not read the photo")})}
 function fmSigLoad(){ESM=false;FMID={f:null,b:null};FMAT=[];fmEsLoad();var s=mySig();if(!s){FMSI=null;return}FMSI=new Image();FMSI.onload=function(){if(FM)fmRender()};FMSI.src=s}
@@ -1364,7 +1365,7 @@ function fmText(){return fmName(FM.t)+(FM.t=='memo'||FM.t=='adv'?'':' - '+FM.v.n
 function fmRender(){
   if(!FM)return;var li=$('lvi');if(li&&FM.t=='lv')li.innerHTML=lvInfo();var cv=fmDraw();cv.toBlob(function(b){FMB=b},'image/png');
   var i=$('fmimg');if(i)i.src=cv.toDataURL('image/jpeg',0.85);
-  var a=$('fmwa');if(a)a.href='https://wa.me/'+waN(fmNum())+'?text='+encodeURIComponent(fmText());var ap=$('fmatp');if(ap){ap.innerHTML=FM.t!='adv'?fmAtCvs().map(function(c){return'<img alt="" style="width:100%;margin-top:8px;border:1px solid var(--bd);border-radius:6px;background:#fff" src="'+c.toDataURL('image/jpeg',0.6)+'">'}).join(''):''}return cv}
+  var a=$('fmwa');if(a)a.href='https://wa.me/'+waN(fmNum())+'?text='+encodeURIComponent(fmText());var cn=$('fmcdn');if(cn)cn.textContent=FM.v&&FM.v.cd?(FMCDo==FM.id?'('+FMCD.length+' found)':'(loading…)'):'';var ap=$('fmatp');if(ap){ap.innerHTML=FM.t!='adv'?fmAtCvs().map(function(c){return'<img alt="" style="width:100%;margin-top:8px;border:1px solid var(--bd);border-radius:6px;background:#fff" src="'+c.toDataURL('image/jpeg',0.6)+'">'}).join(''):''}return cv}
 function fmRec(s){
   RO.fm=RO.fm||[];var e=null;RO.fm.forEach(function(q){if(q.h==FM.h)e=q});
   if(!e){e={h:FM.h||Date.now(),i:FM.id,t:FM.t,d:fmISO(new Date()),s:s,v:FM.v};RO.fm.push(e);FM.h=e.h;if(RO.fm.length>400)RO.fm.shift()}
@@ -1476,7 +1477,7 @@ function fmEdit(){
     if(!d)h+='<div class="bar"><button data-a="adv_rf">↻ Refresh employee list</button></div>'}
   if(t=='clr')h+=fmF('fn_date','Clearance date',v.date,'date','',d);
   if(t=='res')h+=fmF('fn_reason','Reason (optional)',v.reason,'text','',d)+fmF('fn_date','Last working day',v.date,'date','',d);
-  if(t!='adv'&&FM.id!='m1'){h+='<label class="rr" style="margin-top:8px"><span><input type="checkbox" '+(v.cd?'checked ':'')+(d?'disabled ':'')+'onchange="fmCd(this)"> Attach this employee\'s card scans (documents)</span></label>';if(v.cd)fmCdLoad(FM.id)}
+  if(t!='adv'&&FM.id!='m1'){h+='<label class="rr" style="margin-top:8px"><span><input type="checkbox" '+(v.cd?'checked ':'')+(d?'disabled ':'')+'onchange="fmCd(this)"> Attach this employee\'s card scans (documents) <b id="fmcdn"></b></span></label>';if(v.cd)fmCdLoad(FM.id)}
   if(t!='adv'&&t!='trf'&&FM.id!='m1')h+='<label class="rr" style="margin-top:8px"><span><input type="checkbox" '+(v.nidOn?'checked ':'')+(d?'disabled ':'')+'onchange="fmNid(this)"> Include national ID (الرقم القومي)</span></label>';
   h+='<img id="fmimg" alt="" style="width:100%;margin-top:10px;border:1px solid var(--bd);border-radius:6px;background:#fff"><div id="fmatp"></div>';
   if(t=='trf')h+='<div class="bar"><button data-a="id_f">🪪 ID front '+(FMID.f?'✔':'')+'</button><button data-a="id_b">🪪 ID back '+(FMID.b?'✔':'')+'</button></div>'+((FMID.f||FMID.b)?'<div class="bar"><button data-a="id_x">Remove ID photos</button></div>':'')+'<div class="lb" style="font-size:12px">Take a photo or pick a scan. ID photos are not saved in the app - attach them before you save the PDF.</div><input id="idin" type="file" accept="image/*" hidden>';
