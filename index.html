@@ -3,7 +3,7 @@
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
-<title>Gangahoria v46</title>
+<title>Gangahoria v47</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -79,7 +79,7 @@ td.c small.vc{display:block;font-size:9px;font-weight:400;line-height:1;margin-t
 </head>
 <body>
 <header>
-<div class="top"><button id="pv">‹</button><div><b id="ttl"></b><div style="font-size:11px;color:var(--mu);margin-top:2px">Gangahoria v46</div></div><button id="nx">›</button></div>
+<div class="top"><button id="pv">‹</button><div><b id="ttl"></b><div style="font-size:11px;color:var(--mu);margin-top:2px">Gangahoria v47</div></div><button id="nx">›</button></div>
 <div class="pal" id="pal"></div>
 <div class="hint"><span id="st">…</span></div><div id="bkn" class="hint" style="display:none;color:#d2691e"></div>
 </header>
@@ -418,7 +418,7 @@ var DOCS={};
 function docWrite(id,a){
   var col=DB.collection("data/users/"+UID),cs=jchunks(JSON.stringify(a||[])),ps=[];
   for(var i=1;i<cs.length;i++)ps.push(col.doc("docs-"+id+"~"+i).set({j:cs[i]}));
-  return Promise.all(ps).then(function(){return col.doc("docs-"+id).set({n:cs.length,j:cs[0]})})}
+  return Promise.all(ps).then(function(){return col.doc("docs-"+id).set({n:cs.length,j:cs[0]})}).then(function(){for(var i=cs.length;i<cs.length+6;i++)col.doc("docs-"+id+"~"+i).delete().catch(function(){})})}
 var DOCFAIL={};
 function docsGet(id){if(DOCS[id])return Promise.resolve(DOCS[id]);delete DOCFAIL[id];
   var col=DB.collection("data/users/"+UID);
@@ -435,9 +435,9 @@ function docsPut(id,a){if(DOCFAIL[id]){err("Documents were not loaded - close an
 }
 function docsShrink(f){return new Promise(function(ok,no){var u=URL.createObjectURL(f),im=new Image();im.onload=function(){var k=Math.min(1,1100/Math.max(im.width,im.height)),cv=document.createElement("canvas");cv.width=Math.round(im.width*k);cv.height=Math.round(im.height*k);cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);URL.revokeObjectURL(u);ok(cv.toDataURL("image/jpeg",.7))};im.onerror=function(){no(new Error("img"))};im.src=u})}
 function docsDraw(id){var bx=$("cdocs");if(!bx)return;docsGet(id).then(function(a){bx=$("cdocs");if(!bx||SID!=id)return;
-  var h='<div class="lb" style="font-size:12px;margin-top:12px"><b>Documents (مستندات)</b> · '+a.length+'/6 · scans or photos kept on this card</div><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">';
+  var h='<div class="lb" style="font-size:12px;margin-top:12px"><b>Documents (مستندات)</b> · '+a.length+'/1 · the ID scan kept on this card</div><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">';
   a.forEach(function(u,j){h+='<div style="position:relative"><img src="'+u+'" data-a="dc_view" data-i="'+j+'" alt="" style="height:76px;border-radius:8px;border:1px solid var(--bd);display:block"><button data-a="dc_rm" data-i="'+j+'" aria-label="Remove" style="position:absolute;top:-6px;inset-inline-end:-6px;padding:0 7px;border-radius:50%;line-height:20px">✕</button></div>'});
-  h+='</div><div class="bar">'+(a.length<6?'<button data-a="dc_add">🖼 Scan photo / file</button>':'<span class="lb">Maximum 6 documents</span>')+'</div><input id="cdg" type="file" accept="image/*" multiple hidden><div class="lb" style="font-size:12px">'+'Photos are cropped to the ID card automatically (drag the corners to adjust). The copy is saved on the card and you type the details yourself.'+'</div>';
+  h+='</div><div class="bar">'+'<button data-a="dc_add">'+(a.length?'🔄 Replace the ID scan':'🖼 Add ID scan (photo / file)')+'</button></div><input id="cdg" type="file" accept="image/*" hidden><div class="lb" style="font-size:12px">'+'One ID scan per card (a new scan replaces the old one). Scan it with the iPhone scanner, or pick a photo and drag the blue corners to crop. You type the details yourself.'+'</div>';
   bx.innerHTML=h})}
 function shrinkBig(f){return new Promise(function(ok,no){var u=URL.createObjectURL(f),im=new Image();im.onload=function(){var k=Math.min(1,2600/Math.max(im.width,im.height)),cv=document.createElement("canvas");cv.width=Math.round(im.width*k);cv.height=Math.round(im.height*k);cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);URL.revokeObjectURL(u);cv.toBlob(function(b){b?ok(b):no(new Error("img"))},"image/jpeg",.92)};im.onerror=function(){no(new Error("img"))};im.src=u})}
 function docRead(files,id){if(!SM||!SMI)return Promise.resolve();var st0=err('Reading the scan…','#8a8a82',60000);
@@ -577,9 +577,9 @@ function idCrop(f){return new Promise(function(done){
       btn("Save ✓",function(){close(res.toDataURL("image/jpeg",.82))},true)}
     window.addEventListener("resize",lay);stage1();
   },function(){err("Only photos and image files can be added");done(null)})})}
-function docsAdd(fl){var id=SID,a=Array.prototype.slice.call(fl||[]);if(!a.length)return;var g=[];
+function docsAdd(fl){var id=SID,a=Array.prototype.slice.call(fl||[]).slice(0,1);if(!a.length)return;var g=[];
   a.reduce(function(p,f){return p.then(function(){return idCrop(f).then(function(u){if(u)g.push(u)})})},Promise.resolve())
-  .then(function(){if(!g.length)return;return docsGet(id).then(function(cur){return docsPut(id,cur.concat(g).slice(0,6))}).then(function(){docsDraw(id)})})}
+  .then(function(){if(!g.length)return;return docsGet(id).then(function(cur){return docsPut(id,g.slice(0,1))}).then(function(){docsDraw(id)})})}
 
 function docsView(id,j){docsGet(id).then(function(a){if(!a[j])return;var o=document.createElement("div");o.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:99999;display:flex;align-items:center;justify-content:center;padding:12px";o.innerHTML='<img src="'+a[j]+'" alt="" style="max-width:100%;max-height:100%;border-radius:8px;background:#fff">';o.onclick=function(){o.remove()};document.body.appendChild(o)})}
 function cardE(id,pre){
@@ -1218,7 +1218,9 @@ function atLoad(fl){var a=Array.prototype.slice.call(fl||[]);if(!a.length)return
     var g=r.filter(function(q){return q&&q.naturalWidth});if(g.length<a.length)err('Could not read '+(a.length-g.length)+' photo(s)');FMAT=FMAT.concat(g).slice(0,12);fmEdit()})}
 function atFit(im,w,h,nr){var iw=im.naturalWidth,ih=im.naturalHeight,k1=Math.min(w/iw,h/ih),k2=Math.min(w/ih,h/iw);return !nr&&k2>k1*1.05?{k:k2,r:1,w:ih*k2,h:iw*k2}:{k:k1,r:0,w:iw*k1,h:ih*k1}}
 function atDraw(x,im,sx,sy,sw,sh,nr){var f=atFit(im,sw,sh,nr),cx=sx+sw/2,cy=sy+sh/2;x.save();x.translate(cx,cy);if(f.r)x.rotate(Math.PI/2);x.drawImage(im,-im.naturalWidth*f.k/2,-im.naturalHeight*f.k/2,im.naturalWidth*f.k,im.naturalHeight*f.k);x.restore();x.strokeStyle='#999';x.lineWidth=2;x.strokeRect(cx-f.w/2,cy-f.h/2,f.w,f.h)}
+var ATID=true;
 function atPage(ims){var W=1240,H=1754,m=70,g=40,cv=document.createElement('canvas');cv.width=W;cv.height=H;var x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,H);
+  if(ATID){var IW=505,IH=319,gx=(W-IW)/2;ims.forEach(function(im,i){atDraw(x,im,gx,150+i*(IH+70),IW,IH,0)});return cv}
   if(ims.length==1)atDraw(x,ims[0],m,m,W-2*m,H-2*m);
   else{var sw=W-2*m,sh=(H-2*m-g)/2,pw=(W-2*m-g)/2,ph=H-2*m,A=0,B=0;
     ims.forEach(function(im){var a=atFit(im,sw,sh,1),b=atFit(im,pw,ph,1);A+=a.w*a.h;B+=b.w*b.h});
@@ -1402,7 +1404,7 @@ function fxAtP(){return atPagesOf(FX.at)}
 function fxAtLoad(fl){var a=Array.prototype.slice.call(fl||[]);if(!a.length)return;Promise.all(a.map(function(f){return shrink(f).then(function(b){return new Promise(function(ok){var im=new Image();im.onload=function(){ok(im)};im.onerror=function(){ok(null)};im.src=URL.createObjectURL(b)})},function(){return null})})).then(function(r){var g=r.filter(function(q){return q&&q.naturalWidth});if(g.length<a.length)err('Only photos and image files can be attached');FX.at=FX.at.concat(g).slice(0,12);fxRender()})}
 function fxOpen(){FX.res=null;fxRender()}
 function fxList(){var o=[],noM=(FX.t=='pen'||FX.t=='trf'||FX.t=='exc');lay().forEach(function(g,gi){g[1].forEach(function(p){var tk=gi==0?0:gi==1?1:2,night=gi==3||(gi<2&&p[2]=='N');if(!FX.ti[tk]||!FX.sh[night?'N':'D'])return;if(noM&&gi==0)return;var c=RO.c[p[3]]||{};o.push({id:p[3],n:c.fn||p[0],k:c.k||'',gi:gi,tk:tk,night:night,nid:c.i||''})})});return o}
-function fxIn(){FX.t=$('fxt').value;FX.ti={0:$('fxm').checked?1:0,1:$('fxs').checked?1:0,2:$('fxf').checked?1:0};FX.sh={D:$('fxd').checked?1:0,N:$('fxn').checked?1:0};FX.nid=$('fxi').checked?1:0;FX.ap=$('fxa').checked?1:0;FX.es=$('fxe').checked?1:0;FX.atOn=$('fxat').checked?1:0;FX.cd=$('fxcd').checked?1:0;FX.cl=$('fxcl')&&$('fxcl').checked?1:0;FX.reason=$('fxr').value;FX.date=$('fxdt').value;var of={};document.querySelectorAll('.fxp').forEach(function(c){if(!c.checked)of[c.dataset.id]=1});FX.off=of;fxRender()}
+function fxIn(){FX.t=$('fxt').value;FX.ti={0:$('fxm').checked?1:0,1:$('fxs').checked?1:0,2:$('fxf').checked?1:0};FX.sh={D:$('fxd').checked?1:0,N:$('fxn').checked?1:0};FX.nid=$('fxi').checked?1:0;FX.ap=$('fxa').checked?1:0;FX.es=$('fxe').checked?1:0;FX.atOn=$('fxat').checked?1:0;FX.cd=$('fxcd').checked?1:0;ATID=$('atid')?!!$('atid').checked:ATID;FX.cl=$('fxcl')&&$('fxcl').checked?1:0;FX.reason=$('fxr').value;FX.date=$('fxdt').value;var of={};document.querySelectorAll('.fxp').forEach(function(c){if(!c.checked)of[c.dataset.id]=1});FX.off=of;fxRender()}
 function fxRender(){
   var L=fxList(),n=L.filter(function(q){return !FX.off[q.id]}).length;
   var ck=function(id,on,lab){return'<label style="display:inline-flex;align-items:center;gap:4px;margin-inline-end:12px;white-space:nowrap"><input type="checkbox" id="'+id+'" '+(on?'checked ':'')+'onchange="fxIn()"> '+lab+'</label>'};
@@ -1415,7 +1417,7 @@ function fxRender(){
   L.forEach(function(q){h+='<label class="rr"><span style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1"><input type="checkbox" class="fxp" style="width:auto;flex:none;margin:0" data-id="'+q.id+'" '+(FX.off[q.id]?'':'checked ')+'onchange="fxIn()"> '+esc(q.n)+' <span class="lb">'+esc(q.k)+' · '+(q.tk==0?'مدير':q.tk==1?'مشرف':'فرد')+'</span>'+(FX.nid&&!q.nid?' <span style="color:#d64545;font-size:11px">no ID on card</span>':'')+'</span><b style="min-width:22px;text-align:center;padding:1px 8px;border-radius:6px;background:'+(q.night?'#16a34a':'#fbbf24')+';color:'+(q.night?'#fff':'#3a2600')+'">'+(q.night?'N':'D')+'</b></label>'});
   if(!L.length)h+='<div class="lb" style="padding:10px">No names match these ticks.</div>';
   h+='</div>';
-  h+='<div class="lb" style="font-size:12px;margin-top:10px">Include in each form</div><div>'+ck('fxi',FX.nid,'National ID')+ck('fxa',FX.ap,'My approval + signature')+ck('fxe',FX.es,'Employee signature')+ck('fxat',FX.atOn,'Attach document (scan / photo / file)')+ck('fxcd',FX.cd,'Attach each person\'s card scans')+(FX.t=='exc'?ck('fxcl',FX.cl,'بناء على رغبة العميل'):'')+'</div>';
+  h+='<div class="lb" style="font-size:12px;margin-top:10px">Include in each form</div><div>'+ck('fxi',FX.nid,'National ID')+ck('fxa',FX.ap,'My approval + signature')+ck('fxe',FX.es,'Employee signature')+ck('fxat',FX.atOn,'Attach document (scan / photo / file)')+ck('fxcd',FX.cd,'Attach each person\'s card scans')+ck('atid',ATID,'Real ID size (85.6 × 54 mm)')+(FX.t=='exc'?ck('fxcl',FX.cl,'بناء على رغبة العميل'):'')+'</div>';
   if(FX.atOn)h+='<div class="bar"><button data-a="fx_at">📎 Add document</button>'+(FX.at.length?'<button data-a="fx_atx">Remove all ('+FX.at.length+')</button>':'')+'</div><input id="fxin" type="file" accept="image/*" multiple hidden><div class="lb" style="font-size:12px">'+(FX.at.length?FX.at.length+' document(s) are added after every form in the all-in-one PDF (two share a page).':'Pick scans or photos. They are not saved in the app.')+'</div>';
   if(FX.es)h+='<div class="lb" style="font-size:12px">Employee signatures are drawn per person: after creating, tap Open on each name and use “Employee signature”.</div>';
   if(FX.ap&&FX.t=='lv')h+='<div class="lb" style="font-size:12px;color:#d2691e">Leave forms stay drafts: approve each one so the balance check runs.</div>';
@@ -1467,9 +1469,9 @@ function fmEdit(){
   if(t=='pen')h+=fmF('fn_vio','Violation (المخالفة)',v.vio,'text','',d)+fmF('fn_pun','Penalty per regulation (الجزاء)',v.pun,'text','',d)+fmF('fn_date','Date',v.date,'date','',d);
   if(t=='trf')h+=fmF('fn_nid','National ID',v.nid,'text','inputmode="numeric"',d)+fmF('fn_from','From site',v.from,'text','',d)+fmF('fn_to','To site',v.to,'text','',d)+fmF('fn_hrs','Working hours',v.hrs,'text','',d)+fmF('fn_sal','Salary',v.sal,'text','',d)+fmF('fn_date','Date',v.date,'date','',d);
   if(t=='memo')h+='<label class="lb" style="display:block;margin-top:8px;font-size:12px">Content (المحتوى)<textarea id="fn_body" dir="auto" '+(d?'disabled ':'')+'oninput="fmIn()" style="width:100%;min-height:170px;padding:10px;margin-top:4px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font-size:16px;box-sizing:border-box">'+esc(v.body||'')+'</textarea></label>'+fmF('fn_end','Closing (ولكم وافر ...)',v.end,'text','',d)+(d?'':'<div class="rr"><input id="mtn" placeholder="Template name" dir="auto" style="flex:1"><button data-a="mtsave">Save as template</button></div>');
-  if(t!='adv'){h+='<div class="lb" style="font-size:12px;margin-top:12px">Attach documents (مرفقات) - scan or photo</div><div class="bar"><button data-a="at_add">📎 Add document</button>'+(FMAT.length?'<button data-a="at_clr">Remove all</button>':'')+'</div><input id="atin" type="file" accept="image/*" multiple hidden>';
+  if(t!='adv'){h+='<div class="lb" style="font-size:12px;margin-top:12px">Attach documents (مرفقات) - scan or photo</div><div class="bar"><button data-a="at_add">📎 Add document</button>'+(FMAT.length?'<button data-a="at_clr">Remove all</button>':'')+'</div><input id="atin" type="file" accept="image/*" multiple hidden>'+'<label class="rr" style="cursor:pointer"><span><input type="checkbox" '+(ATID?'checked ':'')+'onchange="ATID=this.checked;fmRender()"> Print documents at real ID size (85.6 × 54 mm)</span></label>';
     FMAT.forEach(function(im,i){h+='<div class="rr"><span>📄 Document '+(i+1)+'</span><button data-a="at_x" data-i="'+i+'" style="padding:4px 10px">🗑</button></div>'});
-    h+=FMAT.length?'<div class="lb" style="font-size:12px">'+(FMAT.length==1?'1 document: fills its own page.':'Two documents share one page, laid out automatically (stacked or side by side, kept upright). Pages are added after the memo in the PDF.')+' Not saved in the app - attach them before you save the PDF.</div>':'<div class="lb" style="font-size:12px">Take a photo or pick a scan. Not saved in the app - attach them before you save the PDF.</div>'}
+    h+=FMAT.length?'<div class="lb" style="font-size:12px">'+(ATID?'Printed at real ID size, front above back, two per page. Pages are added after the memo in the PDF.':(FMAT.length==1?'1 document: fills its own page.':'Two documents share one page, laid out automatically (stacked or side by side, kept upright). Pages are added after the memo in the PDF.'))+' Not saved in the app - attach them before you save the PDF.</div>':'<div class="lb" style="font-size:12px">Take a photo or pick a scan. Not saved in the app - attach them before you save the PDF.</div>'}
   if(t=='adv'){h+=fmF('fn_period','Period (الفترة)',v.period,'text','',d)+fmF('fn_to','To (السيد رئيس ...)',v.to,'text','',d)+fmF('fn_greet','Greeting (تحية طيبة وبعد)',v.greet,'text','',d)+fmF('fn_body','Intro line (optional)',v.body,'text','',d)+fmF('fn_end','Closing (ولكم وافر ...)',v.end,'text','',d);
     var on=(v.rows||[]).filter(function(q){return !(v.off||{})[q.id]}).length;
     h+='<div class="lb" style="font-size:12px;margin-top:10px">Untick anyone who does not need an advance · '+on+' / '+(v.rows||[]).length+' selected</div>';
