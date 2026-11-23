@@ -436,7 +436,7 @@ function docsShrink(f){return new Promise(function(ok,no){var u=URL.createObject
 function docsDraw(id){var bx=$("cdocs");if(!bx)return;docsGet(id).then(function(a){bx=$("cdocs");if(!bx||SID!=id)return;
   var h='<div class="lb" style="font-size:12px;margin-top:12px"><b>Documents (مستندات)</b> · '+a.length+'/6 · scans or photos kept on this card</div><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">';
   a.forEach(function(u,j){h+='<div style="position:relative"><img src="'+u+'" data-a="dc_view" data-i="'+j+'" alt="" style="height:76px;border-radius:8px;border:1px solid var(--bd);display:block"><button data-a="dc_rm" data-i="'+j+'" aria-label="Remove" style="position:absolute;top:-6px;inset-inline-end:-6px;padding:0 7px;border-radius:50%;line-height:20px">✕</button></div>'});
-  h+='</div><div class="bar">'+(a.length<6?'<button data-a="dc_add">🖼 Scan photo / file</button>':'<span class="lb">Maximum 6 documents</span>')+'</div><input id="cdg" type="file" accept="image/*" multiple hidden><div class="lb" style="font-size:12px">'+(SMI?'Each scan is saved on the card and read: every detail found (name, ID, address, mobile, code, dates, other) is added to the empty fields.':'Automatic reading is not available here: the scan is saved on the card and you type the details.')+'</div>';
+  h+='</div><div class="bar">'+(a.length<6?'<button data-a="dc_add">🖼 Scan photo / file</button>':'<span class="lb">Maximum 6 documents</span>')+'</div><input id="cdg" type="file" accept="image/*" multiple hidden><div class="lb" style="font-size:12px">'+'Photos are cropped to the ID card automatically (drag the corners to adjust). The copy is saved on the card and you type the details yourself.'+'</div>';
   bx.innerHTML=h})}
 function shrinkBig(f){return new Promise(function(ok,no){var u=URL.createObjectURL(f),im=new Image();im.onload=function(){var k=Math.min(1,2600/Math.max(im.width,im.height)),cv=document.createElement("canvas");cv.width=Math.round(im.width*k);cv.height=Math.round(im.height*k);cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);URL.revokeObjectURL(u);cv.toBlob(function(b){b?ok(b):no(new Error("img"))},"image/jpeg",.92)};im.onerror=function(){no(new Error("img"))};im.src=u})}
 function docRead(files,id){if(!SM||!SMI)return Promise.resolve();var st0=err('Reading the scan…','#8a8a82',60000);
@@ -461,9 +461,125 @@ function docRead(files,id){if(!SM||!SMI)return Promise.resolve();var st0=err('Re
       if(got.length){RO.c[id]=Object.assign({},c,u);saveRO();render()}
       err(got.length?'Added to the card: '+got.join(', '):'Saved. Nothing new to add','#2f9e5b',5000);if(got.length&&SID==id)setTimeout(function(){cardV(id)},300)}
   }).catch(function(e){err(e&&e.code=='not_granted'?'Reading was not allowed - the document is saved':'Could not read the scan - the document is saved')})}
-function docsAdd(fl){var id=SID,a=Array.prototype.slice.call(fl||[]);if(!a.length)return;var fsrc=a.slice();
-  Promise.all(a.map(function(f){return docsShrink(f).then(function(u){return u},function(){return null})})).then(function(r){var g=r.filter(Boolean);if(g.length<a.length)err("Only photos and image files can be added");
-    return docsGet(id).then(function(cur){var n=cur.concat(g).slice(0,6);return docsPut(id,n)})}).then(function(){docsDraw(id);return docRead(fsrc,id)})}
+/* ===== ID photo cropper (no AI): finds the card, straightens it, you can drag the corners ===== */
+function idcLoadImg(f){return new Promise(function(ok,no){var u=URL.createObjectURL(f),im=new Image();im.onload=function(){URL.revokeObjectURL(u);ok(im)};im.onerror=function(){URL.revokeObjectURL(u);no(new Error("img"))};im.src=u})}
+function idcBlur(a,w,h){var t=new Float32Array(a.length),o=new Float32Array(a.length),x,y,k,s,c;
+  for(y=0;y<h;y++)for(x=0;x<w;x++){s=0;c=0;for(k=-1;k<=1;k++){var xx=x+k;if(xx>=0&&xx<w){s+=a[y*w+xx];c++}}t[y*w+x]=s/c}
+  for(y=0;y<h;y++)for(x=0;x<w;x++){s=0;c=0;for(k=-1;k<=1;k++){var yy=y+k;if(yy>=0&&yy<h){s+=t[yy*w+x];c++}}o[y*w+x]=s/c}
+  return o}
+function idcMorph(m,w,h,r,dil){var t=new Uint8Array(m.length),o=new Uint8Array(m.length),x,y,k,v,xx,yy;
+  for(y=0;y<h;y++)for(x=0;x<w;x++){v=dil?0:1;for(k=-r;k<=r;k++){xx=x+k;if(xx<0||xx>=w)continue;if(dil){if(m[y*w+xx]){v=1;break}}else if(!m[y*w+xx]){v=0;break}}t[y*w+x]=v}
+  for(y=0;y<h;y++)for(x=0;x<w;x++){v=dil?0:1;for(k=-r;k<=r;k++){yy=y+k;if(yy<0||yy>=h)continue;if(dil){if(t[yy*w+x]){v=1;break}}else if(!t[yy*w+x]){v=0;break}}o[y*w+x]=v}
+  return o}
+function idcHull(P){P=P.slice().sort(function(a,b){return a[0]-b[0]||a[1]-b[1]});
+  var cr=function(o,a,b){return(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0])},lo=[],up=[],i;
+  for(i=0;i<P.length;i++){while(lo.length>=2&&cr(lo[lo.length-2],lo[lo.length-1],P[i])<=0)lo.pop();lo.push(P[i])}
+  for(i=P.length-1;i>=0;i--){while(up.length>=2&&cr(up[up.length-2],up[up.length-1],P[i])<=0)up.pop();up.push(P[i])}
+  lo.pop();up.pop();return lo.concat(up)}
+function idcArea(p){var s=0,i;for(i=0;i<p.length;i++){var a=p[i],b=p[(i+1)%p.length];s+=a[0]*b[1]-a[1]*b[0]}return Math.abs(s)/2}
+function idcDetect(cv){
+  var w0=cv.width,h0=cv.height,sc=Math.min(1,340/Math.max(w0,h0)),w=Math.max(8,Math.round(w0*sc)),h=Math.max(8,Math.round(h0*sc)),sm=document.createElement("canvas");
+  sm.width=w;sm.height=h;sm.getContext("2d").drawImage(cv,0,0,w,h);
+  var id=sm.getContext("2d").getImageData(0,0,w,h).data,n=w*h,i,x,y,rr=[],gg=[],bb=[],b=Math.max(3,Math.round(Math.min(w,h)*.04));
+  for(y=0;y<h;y+=2)for(x=0;x<w;x+=2)if(x<b||y<b||x>=w-b||y>=h-b){i=(y*w+x)*4;rr.push(id[i]);gg.push(id[i+1]);bb.push(id[i+2])}
+  var med=function(a){a.sort(function(p,q){return p-q});return a[a.length>>1]},mr=med(rr),mg=med(gg),mb=med(bb),dist=new Float32Array(n),mx=1;
+  for(i=0;i<n;i++){var dr=id[i*4]-mr,dg=id[i*4+1]-mg,db=id[i*4+2]-mb,v=Math.sqrt(dr*dr+dg*dg+db*db);dist[i]=v;if(v>mx)mx=v}
+  dist=idcBlur(idcBlur(dist,w,h),w,h);
+  var hist=new Array(64).fill(0),tot=0,k;
+  for(i=0;i<n;i++){k=Math.min(63,Math.floor(dist[i]/mx*64));hist[k]++;tot++}
+  var sumAll=0;for(k=0;k<64;k++)sumAll+=k*hist[k];
+  var wB=0,sB=0,best=-1,thr=0;
+  for(k=0;k<64;k++){wB+=hist[k];if(!wB)continue;var wF=tot-wB;if(!wF)break;sB+=k*hist[k];var mB=sB/wB,mF=(sumAll-sB)/wF,bv=wB*wF*(mB-mF)*(mB-mF);if(bv>best){best=bv;thr=k}}
+  thr=(thr+1)/64*mx;
+  var M=new Uint8Array(n);for(i=0;i<n;i++)M[i]=dist[i]>thr?1:0;
+  var r=Math.max(2,Math.round(Math.min(w,h)/60));
+  M=idcMorph(idcMorph(M,w,h,r,true),w,h,r,false);M=idcMorph(idcMorph(M,w,h,r,false),w,h,r,true);
+  /* largest connected blob */
+  var lab=new Int32Array(n),cnt=0,bestL=0,bestA=0,st=[],a,j;
+  for(i=0;i<n;i++){if(!M[i]||lab[i])continue;cnt++;var area=0;st.length=0;st.push(i);lab[i]=cnt;
+    while(st.length){a=st.pop();area++;var ax=a%w,ay=(a/w)|0;
+      if(ax>0&&M[a-1]&&!lab[a-1]){lab[a-1]=cnt;st.push(a-1)}if(ax<w-1&&M[a+1]&&!lab[a+1]){lab[a+1]=cnt;st.push(a+1)}
+      if(ay>0&&M[a-w]&&!lab[a-w]){lab[a-w]=cnt;st.push(a-w)}if(ay<h-1&&M[a+w]&&!lab[a+w]){lab[a+w]=cnt;st.push(a+w)}}
+    if(area>bestA){bestA=area;bestL=cnt}}
+  if(!bestL||bestA<n*.1||bestA>n*.985)return null;
+  var B=new Uint8Array(n);for(i=0;i<n;i++)B[i]=lab[i]==bestL?1:0;
+  var P=[];
+  for(y=0;y<h;y++)for(x=0;x<w;x++){i=y*w+x;if(!B[i])continue;if(x==0||y==0||x==w-1||y==h-1||!B[i-1]||!B[i+1]||!B[i-w]||!B[i+w])P.push([x,y])}
+  var H=idcHull(P);if(H.length<3)return null;
+  var hA=idcArea(H);
+  /* quad from diagonal extremes (keeps perspective) */
+  var q=[H[0],H[0],H[0],H[0]],sv=[1e9,-1e9,-1e9,1e9];
+  H.forEach(function(p){var s=p[0]+p[1],d=p[0]-p[1];if(s<sv[0]){sv[0]=s;q[0]=p}if(d>sv[1]){sv[1]=d;q[1]=p}if(s>sv[2]){sv[2]=s;q[2]=p}if(d<sv[3]){sv[3]=d;q[3]=p}});
+  var out=null;
+  if(idcArea(q)>=hA*.9)out=q;
+  else{ /* minimum-area rectangle */
+    var bestR=1e18;
+    for(i=0;i<H.length;i++){var p1=H[i],p2=H[(i+1)%H.length],ux=p2[0]-p1[0],uy=p2[1]-p1[1],L=Math.hypot(ux,uy);if(!L)continue;ux/=L;uy/=L;var vx=-uy,vy=ux,u0=1e9,u1=-1e9,v0=1e9,v1=-1e9;
+      H.forEach(function(p){var du=p[0]*ux+p[1]*uy,dv=p[0]*vx+p[1]*vy;if(du<u0)u0=du;if(du>u1)u1=du;if(dv<v0)v0=dv;if(dv>v1)v1=dv});
+      var ar=(u1-u0)*(v1-v0);if(ar<bestR){bestR=ar;out=[[u0*ux+v0*vx,u0*uy+v0*vy],[u1*ux+v0*vx,u1*uy+v0*vy],[u1*ux+v1*vx,u1*uy+v1*vy],[u0*ux+v1*vx,u0*uy+v1*vy]]}}}
+  if(!out)return null;
+  /* order clockwise starting at top-left, landscape */
+  var cx=0,cy=0;out.forEach(function(p){cx+=p[0]/4;cy+=p[1]/4});
+  out.sort(function(p,q2){return Math.atan2(p[1]-cy,p[0]-cx)-Math.atan2(q2[1]-cy,q2[0]-cx)});
+  var s0=0,sm0=1e18;out.forEach(function(p,ix){if(p[0]+p[1]<sm0){sm0=p[0]+p[1];s0=ix}});
+  out=out.slice(s0).concat(out.slice(0,s0));
+  var dd=function(p,q2){return Math.hypot(p[0]-q2[0],p[1]-q2[1])};
+  if(dd(out[0],out[1])+dd(out[3],out[2])<dd(out[0],out[3])+dd(out[1],out[2]))out=[out[1],out[2],out[3],out[0]];
+  return out.map(function(p){return[Math.max(0,Math.min(w0,p[0]/sc)),Math.max(0,Math.min(h0,p[1]/sc))]})}
+function idcHomog(dst,src){var A=[],i;for(i=0;i<4;i++){var x=dst[i][0],y=dst[i][1],u=src[i][0],v=src[i][1];A.push([x,y,1,0,0,0,-u*x,-u*y,u]);A.push([0,0,0,x,y,1,-v*x,-v*y,v])}
+  var n=8,c,r,k;
+  for(c=0;c<n;c++){var p=c;for(r=c+1;r<n;r++)if(Math.abs(A[r][c])>Math.abs(A[p][c]))p=r;var t=A[c];A[c]=A[p];A[p]=t;if(Math.abs(A[c][c])<1e-12)return null;
+    for(r=c+1;r<n;r++){var f=A[r][c]/A[c][c];for(k=c;k<=n;k++)A[r][k]-=f*A[c][k]}}
+  var X=new Array(n),j;for(i=n-1;i>=0;i--){var s=A[i][n];for(j=i+1;j<n;j++)s-=A[i][j]*X[j];X[i]=s/A[i][i]}return X}
+function idcWarp(src,q){
+  var d=function(a,b){return Math.hypot(a[0]-b[0],a[1]-b[1])},W=Math.max(d(q[0],q[1]),d(q[3],q[2])),H=Math.max(d(q[0],q[3]),d(q[1],q[2])),k=Math.min(1,1100/Math.max(W,H,1));
+  W=Math.max(2,Math.round(W*k));H=Math.max(2,Math.round(H*k));
+  var m=idcHomog([[0,0],[W,0],[W,H],[0,H]],q);if(!m)return null;
+  var sw=src.width,sh=src.height,sd=src.getContext("2d").getImageData(0,0,sw,sh).data,out=document.createElement("canvas");out.width=W;out.height=H;
+  var oc=out.getContext("2d"),od=oc.createImageData(W,H),o=od.data,x,y,ch;
+  for(y=0;y<H;y++)for(x=0;x<W;x++){var z=m[6]*x+m[7]*y+1,u=(m[0]*x+m[1]*y+m[2])/z,v=(m[3]*x+m[4]*y+m[5])/z,p=(y*W+x)*4;
+    if(!(u>=0&&v>=0&&u<=sw-1&&v<=sh-1)){o[p]=o[p+1]=o[p+2]=255;o[p+3]=255;continue}
+    var x0=u|0,y0=v|0,x1=Math.min(x0+1,sw-1),y1=Math.min(y0+1,sh-1),fx=u-x0,fy=v-y0,a=(y0*sw+x0)*4,b=(y0*sw+x1)*4,c=(y1*sw+x0)*4,e=(y1*sw+x1)*4;
+    for(ch=0;ch<3;ch++)o[p+ch]=(sd[a+ch]*(1-fx)+sd[b+ch]*fx)*(1-fy)+(sd[c+ch]*(1-fx)+sd[e+ch]*fx)*fy;o[p+3]=255}
+  oc.putImageData(od,0,0);return out}
+function idCrop(f){return new Promise(function(done){
+  idcLoadImg(f).then(function(im){
+    var iw=im.naturalWidth||im.width,ih=im.naturalHeight||im.height,k=Math.min(1,2000/Math.max(iw,ih)),src=document.createElement("canvas");
+    src.width=Math.round(iw*k);src.height=Math.round(ih*k);src.getContext("2d").drawImage(im,0,0,src.width,src.height);
+    var q=null;try{q=idcDetect(src)}catch(e){q=null}
+    var auto=!!q;if(!q){var mx=src.width*.08,my=src.height*.08;q=[[mx,my],[src.width-mx,my],[src.width-mx,src.height-my],[mx,src.height-my]]}
+    var o=document.createElement("div");o.style.cssText="position:fixed;inset:0;background:#000;z-index:99998;display:flex;flex-direction:column;touch-action:none;-webkit-user-select:none;user-select:none";
+    var tt=document.createElement("div");tt.style.cssText="color:#fff;text-align:center;padding:calc(10px + env(safe-area-inset-top,0px)) 12px 8px;font-size:14px";
+    var wr=document.createElement("div");wr.style.cssText="flex:1;position:relative;min-height:0;display:flex;align-items:center;justify-content:center";
+    var bar=document.createElement("div");bar.style.cssText="display:flex;gap:8px;padding:10px 12px calc(12px + env(safe-area-inset-bottom,0px))";
+    o.appendChild(tt);o.appendChild(wr);o.appendChild(bar);document.body.appendChild(o);
+    var cv=document.createElement("canvas");cv.style.cssText="position:absolute;left:0;top:0;touch-action:none";
+    var s=1,ox=0,oy=0,drag=-1,res=null;
+    function btn(t,fn,pr){var b=document.createElement("button");b.textContent=t;b.style.cssText="flex:1;padding:12px 6px;border-radius:12px;border:1px solid #555;background:"+(pr?"#2f6fed":"#222")+";color:#fff;font:inherit;font-size:15px;font-weight:600";b.onclick=fn;bar.appendChild(b)}
+    function close(v){window.removeEventListener("resize",lay);o.remove();done(v)}
+    function lay(){if(res)return;var W=wr.clientWidth,H=wr.clientHeight;cv.width=W;cv.height=H;s=Math.min(W/src.width,H/src.height);ox=(W-src.width*s)/2;oy=(H-src.height*s)/2;draw()}
+    function draw(){var c=cv.getContext("2d");c.clearRect(0,0,cv.width,cv.height);c.drawImage(src,ox,oy,src.width*s,src.height*s);
+      c.beginPath();q.forEach(function(p,i){var x=p[0]*s+ox,y=p[1]*s+oy;if(i)c.lineTo(x,y);else c.moveTo(x,y)});c.closePath();c.fillStyle="rgba(47,111,237,.18)";c.fill();c.lineWidth=2;c.strokeStyle="#4f8cff";c.stroke();
+      q.forEach(function(p){c.beginPath();c.arc(p[0]*s+ox,p[1]*s+oy,13,0,7);c.fillStyle="#fff";c.fill();c.lineWidth=3;c.strokeStyle="#2f6fed";c.stroke()})}
+    function pos(e){var r=cv.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]}
+    cv.onpointerdown=function(e){var p=pos(e),bd=44,i;drag=-1;q.forEach(function(c,i){var d=Math.hypot(c[0]*s+ox-p[0],c[1]*s+oy-p[1]);if(d<bd){bd=d;drag=i}});if(drag>=0){cv.setPointerCapture(e.pointerId);e.preventDefault()}};
+    cv.onpointermove=function(e){if(drag<0)return;var p=pos(e);q[drag]=[Math.max(0,Math.min(src.width,(p[0]-ox)/s)),Math.max(0,Math.min(src.height,(p[1]-oy)/s))];draw()};
+    cv.onpointerup=cv.onpointercancel=function(){drag=-1};
+    function stage1(){res=null;bar.innerHTML="";wr.innerHTML="";wr.appendChild(cv);tt.textContent=auto?"ID found - drag the corners if it needs fixing":"Drag the 4 corners to fit the ID card";
+      btn("Cancel",function(){close(null)});
+      btn("Use whole photo",function(){docsShrink(f).then(close,function(){close(null)})});
+      btn("Crop ✓",stage2,true);lay()}
+    function stage2(){var r=idcWarp(src,q);if(!r){err("Could not crop - move the corners");return}res=r;show()}
+    function show(){bar.innerHTML="";wr.innerHTML="";res.style.cssText="max-width:100%;max-height:100%;object-fit:contain;background:#fff;border-radius:6px";wr.appendChild(res);tt.textContent="Check the result";
+      btn("← Adjust",stage1);
+      btn("↻ Rotate",function(){var n=document.createElement("canvas");n.width=res.height;n.height=res.width;var c=n.getContext("2d");c.translate(n.width,0);c.rotate(Math.PI/2);c.drawImage(res,0,0);res=n;show()});
+      btn("Save ✓",function(){close(res.toDataURL("image/jpeg",.82))},true)}
+    window.addEventListener("resize",lay);stage1();
+  },function(){err("Only photos and image files can be added");done(null)})})}
+function docsAdd(fl){var id=SID,a=Array.prototype.slice.call(fl||[]);if(!a.length)return;var g=[];
+  a.reduce(function(p,f){return p.then(function(){return idCrop(f).then(function(u){if(u)g.push(u)})})},Promise.resolve())
+  .then(function(){if(!g.length)return;return docsGet(id).then(function(cur){return docsPut(id,cur.concat(g).slice(0,6))}).then(function(){docsDraw(id)})})}
+
 function docsView(id,j){docsGet(id).then(function(a){if(!a[j])return;var o=document.createElement("div");o.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:99999;display:flex;align-items:center;justify-content:center;padding:12px";o.innerHTML='<img src="'+a[j]+'" alt="" style="max-width:100%;max-height:100%;border-radius:8px;background:#fff">';o.onclick=function(){o.remove()};document.body.appendChild(o)})}
 function cardE(id,pre){
   SID=id;var i=pinfo(id),c=RO.c[id]||{};
