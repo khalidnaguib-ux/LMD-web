@@ -3,7 +3,7 @@
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
-<title>LMD web v51</title>
+<title>LMD web v52</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -11,7 +11,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
-/* LMD web v51 - iOS card look (CSS only). Light + Dark follow the system. */
+/* LMD web v52 - iOS card look (CSS only). Light + Dark follow the system. */
 :root{--bg:#f2f2f7;--card:#fff;--tx:#1c1c1e;--mu:#6e6e73;--bd:#e0e0e6;--fr:#f2f2f7;--ac:#007aff;--ac2:rgba(0,122,255,.14);--or:#ff9500;--sh1:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.06);--bl:saturate(180%) blur(18px);color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--card:#1c1c1e;--tx:#f5f5f7;--mu:#98989f;--bd:#38383a;--fr:#2c2c2e;--ac:#0a84ff;--ac2:rgba(10,132,255,.22);--or:#ff9f0a;--sh1:0 0 0 .5px rgba(255,255,255,.06);color-scheme:dark}}
 :root[data-theme="dark"]{--bg:#000;--card:#1c1c1e;--tx:#f5f5f7;--mu:#98989f;--bd:#38383a;--fr:#2c2c2e;--ac:#0a84ff;--ac2:rgba(10,132,255,.22);--or:#ff9f0a;--sh1:0 0 0 .5px rgba(255,255,255,.06);color-scheme:dark}
@@ -98,19 +98,57 @@ td.n{direction:rtl;inset-inline-start:auto;left:0}
 td.c small.vc{display:block;font-size:9px;font-weight:400;line-height:1;margin-top:1px}
 /* Toolbar grid (drag-to-arrange) */
 .bar#tbar,.bar#tbar *{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}body.noSel,body.noSel *{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important}.bar#tbar button.lift{position:relative;z-index:50;transform-origin:center;box-shadow:0 12px 30px rgba(0,0,0,.4);opacity:.95;pointer-events:none}.bar#tbar button.ph{outline:2px dashed var(--mu);outline-offset:2px}#tbar{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:10px}#tbar button{grid-column:span 2}#tbar button{min-width:0;height:58px;padding:3px 2px;font-size:12px;line-height:1.15;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;overflow-wrap:anywhere;border-radius:14px}#tbar #tbr,#tbar #tbs{height:38px;font-size:13px;grid-column:span 4;padding:2px}#tbar.arr button:not(#tbs):not(#tbr){outline:2px dashed var(--mu);outline-offset:-4px}#tbar.arr button:disabled{pointer-events:none}#tbar.arr button.sel{outline:3px solid var(--ac);outline-offset:-3px;background:var(--ac2)}#tbar #tbh{font-size:12px;text-align:center;opacity:.8;padding:2px 0}#tbar{padding-bottom:90px}#tbar>button:nth-child(-n+4){height:46px}#tbar>div{grid-column:1/-1}
+/* v52: Today dashboard + tab bar */
+#tab{position:fixed;left:0;right:0;bottom:0;display:flex;gap:2px;background:color-mix(in srgb,var(--card) 86%,transparent);-webkit-backdrop-filter:var(--bl);backdrop-filter:var(--bl);border-top:.5px solid var(--bd);padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));z-index:20}
+#tab button{flex:1;background:none;box-shadow:none;border-radius:12px;padding:5px 2px;color:var(--mu);font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:1px}
+#tab button b{font-size:20px;line-height:1.1;font-weight:400}
+#tab button.on{color:var(--ac)}
+#tbar{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+#er{bottom:calc(100px + env(safe-area-inset-bottom,0px))}
+#dash{padding:2px 0 calc(100px + env(safe-area-inset-bottom,0px))}
+.dcard{background:var(--card);border-radius:18px;box-shadow:var(--sh1);margin:12px 10px 0;padding:14px 14px 12px}
+.dcard h3{margin:0 0 10px;font-size:12px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px}
+.dg{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.dc{border:2px solid var(--cc);background:color-mix(in srgb,var(--cc) 18%,var(--card));border-radius:14px;text-align:center;padding:8px 0 6px}
+.dc b{display:block;font-size:22px;line-height:1.1;font-variant-numeric:tabular-nums}
+.dc span{display:block;font-size:11px;font-weight:700;margin-top:2px}
+.dh{margin:14px 0 8px;font-size:13px;font-weight:700;color:var(--mu)}
+.dpw{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.dp{background:var(--fr);color:var(--tx);border-radius:999px;padding:7px 13px;font-size:14px;white-space:nowrap;cursor:pointer}
+.dp:active{opacity:.6}
+.dok{color:#30a46c;font-weight:700;margin-top:10px}
+.dcard .dok:first-child{margin-top:0}
+.di{display:flex;justify-content:space-between;align-items:center;padding:8px 0 2px;font-weight:600;cursor:default}
+.di[data-q]{cursor:pointer}.di i{font-style:normal;color:var(--ac);font-size:13px}
+.dbig{font-size:34px;font-weight:700;letter-spacing:-.6px;font-variant-numeric:tabular-nums}
+.dbig small{font-size:14px;font-weight:600;color:var(--mu);letter-spacing:0}
+.dsm{font-size:12px;margin-top:8px}
+.pg{height:8px;border-radius:4px;background:var(--fr);overflow:hidden;margin-top:10px}
+.pg i{display:block;height:100%;background:var(--ac);border-radius:4px}
+.dtap{cursor:pointer}
+.dgr{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.dgr b{display:block;font-size:17px;font-variant-numeric:tabular-nums}.dgr span{font-size:11px;color:var(--mu)}
+.dqg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.dqg button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 2px;font-size:11px;line-height:1.15;background:var(--fr);box-shadow:none;color:var(--tx);min-width:0}
+.dqg button b{font-size:21px;font-weight:400}
+.dcust{text-align:center;margin:14px 10px 0}
+td.c.VDS,th.k.VDS{font-size:10px;letter-spacing:-.5px;white-space:nowrap}
+td.t.VDS{font-size:11px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}button:active{transform:none}}
 </style>
 </head>
 <body>
 <header>
-<div class="top"><button id="pv">‹</button><div><b id="ttl"></b><div style="font-size:11px;color:var(--mu);margin-top:2px">LMD web v51</div></div><button id="nx">›</button></div>
+<div class="top"><button id="pv">‹</button><div><b id="ttl"></b><div style="font-size:11px;color:var(--mu);margin-top:2px">LMD web v52</div></div><button id="nx">›</button></div>
 <div class="pal" id="pal"></div>
 <div class="hint"><span id="st">…</span></div><div id="bkn" class="hint" style="display:none;color:#d2691e"></div>
 </header>
 <div class="w"><table id="tb"></table></div>
+<div id="dash" style="display:none"></div>
 <div class="bar" id="tbar"><button id="un" disabled style="opacity:.4">↶ Undo</button><button id="bk">⬇ Backup</button><button id="pd">Month PDF</button><button id="p2">Overtime PDF</button><button id="mm">📊 LMD Monthly</button><button id="fx">🗂 Create form</button><button id="nm">Names</button><button id="cb">Contacts</button><button id="rc">📒 Roll-call</button><button id="fu">📊 Follow-up</button><button id="al">🗓 Landmark archive</button><button id="ar">🔒 Archive</button><button id="xl">📗 Excel</button><button id="tr">📋 Track forms</button><button id="py">💰 Payroll</button><button id="hs">📲 Home Screen</button><button id="tbs">✎ Arrange icons</button><button id="tbr">↺ Original order</button><div id="tbh" style="display:none">Tap one icon, then tap another to swap them. Tap “Done” when finished.</div></div>
 <div id="er"></div><div id="sh"></div>
-<div id="lg"><div><b>LMD web v51</b><p>Sign in with Google to open your shift sheets.<br>تسجيل الدخول للوصول إلى البيانات</p><button id="lgb" disabled>Loading…</button><div id="lgm"></div></div></div>
+<nav id="tab"><button data-t="today" class="on"><b>🏠</b>Today</button><button data-t="roster"><b>📅</b>Roster</button><button data-q="py"><b>💰</b>Pay</button><button data-q="fx"><b>🗂</b>Forms</button></nav>
+<div id="lg"><div><b>LMD web v52</b><p>Sign in with Google to open your shift sheets.<br>تسجيل الدخول للوصول إلى البيانات</p><button id="lgb" disabled>Loading…</button><div id="lgm"></div></div></div>
 <script>
 var $=function(i){return document.getElementById(i)};
 var K=[["D","نهاري"],["N","ليلي"],["DS","تطبيق"],["V","إجازة"],["Z","مرضي"],["C","عارضة"],["A","غياب"],["S","طبي"],["SM","راحه تبديل ورديه"],["VDS","راحه بدل تطبيق"]];
@@ -177,7 +215,9 @@ function loadRO(){
     })
   }).catch(function(){ROK=false;err("Could not load names and contact cards - check your connection and reopen the app","#d64545",8000)});
 }
-function extra(t){return Math.max(0,5-t.V)+Math.max(0,t.DS-(t.VDS||0))}
+function pEnded(){var D=days();return key(new Date())>key(D[D.length-1])}
+function lvLeft(id,t){if(!id||!K.some(function(k){return t[k[0]]>0}))return 0;var D=days();return Math.max(0,pyEnt(id,key(D[0]),key(D[D.length-1])).e-t.V)}
+function extra(t,id){return Math.max(0,t.DS-(t.VDS||0))+(pEnded()?lvLeft(id,t):0)}
 function updUndo(){var b=$("un");if(b){b.disabled=!hist.length;b.style.opacity=hist.length?1:.4}}
 function write(obj,noHist){
   if(!noHist){var pv={};Object.keys(obj).forEach(function(k){pv[k]=cells[k]||""});hist.push(pv);if(hist.length>100)hist.shift()}
@@ -221,9 +261,9 @@ function render(){
     h+='<tr class="gh" data-g="'+gi+'"><td colspan="'+(D.length+K.length+3)+'">'+g[0]+'</td></tr>';
     g[1].forEach(function(p,pi){
       var t=tot(p[3]),vn=0,jd0=jDay(p[3]),ve=(jd0&&jd0>key(D[0]))?Math.min(5,Math.floor(jAtt(t)/6)):5,ar=aMap(p[3],D),rf=((raisedOf(p[3],D)||(RO.c[p[3]]||{}).rz)?" rf":"")+shMark(p,gi)+resMark(p,gi);
-      h+='<tr><td class="n'+rf+'" data-id="'+p[3]+'">'+esc(p[0].split(/\s+/).slice(0,3).join(" "))+(p[1]?'<small>'+p[1]+'</small>':'')+'</td>';
+      h+='<tr><td class="n'+rf+'" data-id="'+p[3]+'">'+esc(p[0].split(/\s+/).slice(0,2).join(" "))+(p[1]?'<small>'+p[1]+'</small>':'')+'</td>';
       D.forEach(function(d,di){var k=key(d),c=get(p[3],k),jb=!!jd0&&k<jd0,jf=!jb&&!!jd0&&k==jd0&&(c=="D"||c=="N"||c=="DS");if(jb)c="";h+='<td data-r="'+gi+"_"+pi+'" data-k="'+k+'" class="'+(c?"c "+c+" ":"")+(jb?"jb ":"")+(jf?"jf ":"")+(d.getDate()==1?"ms ":"")+(k==TK?"td":"")+'">'+(c=="R"?(di>0&&get(p[3],key(D[di-1]))=="A"&&parseInt(ar[key(D[di-1])])>=5?'<small class=vc>OUT</small>':""):c=="V"?'V<small class=vc>'+(++vn)+'/'+ve+'</small>':c=="A"&&ar[k]?'A<small class=vc>'+ar[k]+'</small>':kd(c))+'</td>'});
-      h+=K.map(function(k){return '<td class="t '+(t[k[0]]?"c ":"")+k[0]+'">'+(t[k[0]]||"")+'</td>'}).join("")+'<td class="nm2'+rf+'">'+esc(p[0].split(/\s+/).slice(0,3).join(" "))+'</td><td class="t x">'+extra(t)+'</td></tr>';
+      h+=K.map(function(k){return '<td class="t '+(t[k[0]]?"c ":"")+k[0]+'">'+(t[k[0]]||"")+'</td>'}).join("")+'<td class="nm2'+rf+'">'+esc(p[0].split(/\s+/).slice(0,2).join(" "))+'</td><td class="t x">'+extra(t,p[3])+'</td></tr>';
     });
   });
   $("tb").innerHTML=h;
@@ -267,7 +307,7 @@ $("tb").onclick=function(e){
   var nv=o[p[3]+"_"+k],ms=(c.classList.contains("ms")?"ms ":"")+(c.classList.contains("td")?"td":"");
   c.className=(nv?"c "+nv+" ":"")+ms;c.textContent=nv=="R"?"":kd(nv);
   var t=tot(p[3]),cl=c.parentNode.querySelectorAll("td.t");
-  K.forEach(function(x,i){cl[i].textContent=t[x[0]]||"";cl[i].className="t "+(t[x[0]]?"c ":"")+x[0]});cl[K.length].textContent=extra(t);
+  K.forEach(function(x,i){cl[i].textContent=t[x[0]]||"";cl[i].className="t "+(t[x[0]]?"c ":"")+x[0]});cl[K.length].textContent=extra(t,p[3]);
 };
 var bT=null;function bTimer(){palRet();clearTimeout(bT);if(brush!==null)bT=setTimeout(function(){brush=null;pal()},10000)}
 $("pal").onclick=function(e){var b=e.target.closest("[data-b]");if(!b)return;brush=b.dataset.b;pal();bTimer();palRet()};$("pal").addEventListener("scroll",palRet);
@@ -994,14 +1034,14 @@ function pyEnt(id,a,b){var j=jDay(id);if(!j||j<=a)return{e:5,w:30,late:false};va
 function pnDays(t){t=String(t||"").replace(/[٠-٩]/g,function(c){return c.charCodeAt(0)-1632}).replace(/[أإآ]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه");if(!/خصم/.test(t))return 0;if(/نصف\s*يوم/.test(t))return .5;if(/ربع\s*يوم/.test(t))return .25;var m=t.match(/(\d+(?:\.\d+)?)\s*(?:يوم|ايام)/);if(m)return+m[1];if(/يومين/.test(t))return 2;if(/ثلاثه\s*ايام/.test(t))return 3;if(/اربعه\s*ايام/.test(t))return 4;if(/خمسه\s*ايام/.test(t))return 5;return /يوم/.test(t)?1:0}
 function pyRows(){var S=pyS(),D=days(),a=key(D[0]),b=key(D[D.length-1]),rows=[];
   plist().forEach(function(z){var id=z[0][3];if(!id||RO.h[id]||resGone(id,a))return;var i=pinfo(id);if(!i)return;var c=pyCat(id,z[1]),t=tot(id),has=K.some(function(k){return t[k[0]]>0}),g=RO.g[id]==null?z[1]:RO.g[id],
-    net=S.p[id]!=null?+S.p[id]:+(S[c].n||0),comp=+(S[c].c||0),unit=r2(net/30),en=pyEnt(id,a,b),paid=en.w,er=r2(net*paid/30),ent=has?en.e:0,rem=has?Math.max(0,ent-t.V):0,ds2=Math.max(0,t.DS-(t.VDS||0)),ex=rem+(has?ds2:0),ot=r2(ex*unit*1.5),
+    net=S.p[id]!=null?+S.p[id]:+(S[c].n||0),comp=+(S[c].c||0),unit=r2(net/30),en=pyEnt(id,a,b),paid=en.w,er=r2(net*paid/30),ent=has?en.e:0,rem0=has?Math.max(0,ent-t.V):0,rem=pEnded()?rem0:0,ds2=Math.max(0,t.DS-(t.VDS||0)),ex=rem+(has?ds2:0),ot=r2(ex*unit*1.5),pend=en.late&&!pEnded(),
     pl=(RO.fm||[]).filter(function(e){var d=(e.v&&e.v.date)||e.d;return e.t=='pen'&&e.s=='signed'&&e.i==id&&d>=a&&d<=b}),pen=pl.length,pdy=pl.reduce(function(q,e){return q+pnDays(e.v&&e.v.pun)},0),pdd=r2(pdy*unit),ab=t.A,aa=pyAbs(id),dd=r2(aa.u*unit),cp=(!en.late&&ab==0&&pen==0)?comp:0;
-    rows.push({id:id,n:i[0][0],k:(RO.c[id]||{}).k||'',cat:PYN[c],net:net,unit:unit,pd:paid,er:er,late:en.late,ent:ent,tk:t.V,rem:rem,ds:ds2,dsg:t.DS,vds:t.VDS||0,ex:ex,ot:ot,ab:ab,sx:(t.S||0)+(t.SM||0),du:aa.u,dd:dd,out:aa.out,runs:aa.runs.join('+'),pen:pen,pdy:pdy,pdd:pdd,comp:comp,cp:cp,rs:!!(RO.c[id]||{}).rs,ng:(g==3||(g<2&&z[0][2]=='N')),tot:r2(er+ot+cp-dd-pdd)})});
+    rows.push({id:id,n:i[0][0],k:(RO.c[id]||{}).k||'',cat:PYN[c],net:net,unit:unit,pd:paid,er:pend?0:er,late:en.late,pend:pend,ended:pEnded(),rem0:rem0,proj:r2(er+ot+cp-dd-pdd),ent:ent,tk:t.V,rem:rem,ds:ds2,dsg:t.DS,vds:t.VDS||0,ex:ex,ot:pend?0:ot,ab:ab,sx:(t.S||0)+(t.SM||0),du:aa.u,dd:pend?0:dd,out:aa.out,runs:aa.runs.join('+'),pen:pen,pdy:pdy,pdd:pend?0:pdd,comp:comp,cp:pend?0:cp,rs:!!(RO.c[id]||{}).rs,ng:(g==3||(g<2&&z[0][2]=='N')),tot:pend?0:r2(er+ot+cp-dd-pdd)})});
   return rows}
 function pyOpen(){var S=pyS(),D=days(),R=pyRows(),T=0;
-  var h='<b>Payroll · '+fd(key(D[0]))+' → '+fd(key(D[D.length-1]))+'</b><div class="lb" style="font-size:12px;margin-top:6px">Daily unit = net ÷ 30. A late joiner is paid only for the days worked (net ÷ 30 × days). Leave: 5 days for a full month, 1 per 6 days worked for a late joiner; each leave day not taken (+ each Double Shift) = unit × 1.5. Absence: a single day = 2 units; 2–5 consecutive days = 2 per day + 1; more than 5 = OUT. Medical leave (S) and shift-moving leave (SM, never on consecutive days) are paid 100%: no deduction and they do not use the leave balance. Compensation (500 by default for supervisors and guards): full month only, no absence (A) and no signed penalty - a signed penalty also withholds it. A signed penalty deducts money, read from the penalty text: خصم يوم = 1 unit, خصم نصف يوم = unit ÷ 2, خصم N أيام = N units. A late joiner is counted from his first working day: leave is earned 1 per 6 days attended (any status except A and V) and OUT does not apply to the days before he joined.</div>';
+  var h='<b>Payroll · '+fd(key(D[0]))+' → '+fd(key(D[D.length-1]))+'</b><div class="lb" style="font-size:12px;margin-top:6px">Daily unit = net ÷ 30. A late joiner is paid only for the days worked (net ÷ 30 × days). Leave: 5 days for a full month, 1 per 6 days worked for a late joiner; each Double Shift (minus V/DS) = unit × 1.5 as it happens, and each leave day not taken = unit × 1.5, counted only when the pay period has ended. The net of a late joiner stays pending until the pay period ends, then he is paid for the days from his first day (joined mid-period = about half the net). Absence: a single day = 2 units; 2–5 consecutive days = 2 per day + 1; more than 5 = OUT. Medical leave (S) and shift-moving leave (SM, never on consecutive days) are paid 100%: no deduction and they do not use the leave balance. Compensation (500 by default for supervisors and guards): full month only, no absence (A) and no signed penalty - a signed penalty also withholds it. A signed penalty deducts money, read from the penalty text: خصم يوم = 1 unit, خصم نصف يوم = unit ÷ 2, خصم N أيام = N units. A late joiner is counted from his first working day: leave is earned 1 per 6 days attended (any status except A and V) and OUT does not apply to the days before he joined.</div>';
   ['m','s','f'].forEach(function(k){h+='<div class="rr"><span>'+PYN[k]+'</span><span style="font-size:13px">Net <input type="number" min="0" value="'+(S[k].n||'')+'" style="width:84px" onchange="pySet(\''+k+'\',\'n\',this.value)"> Comp. <input type="number" min="0" value="'+(S[k].c||'')+'" style="width:70px" onchange="pySet(\''+k+'\',\'c\',this.value)"></span></div>'});
-  R.forEach(function(r){T+=r.tot;h+='<div class="rr" style="flex-wrap:wrap"><span style="width:100%"><b style="color:'+(r.ng?'#0a7a35':'#0b4fb8')+(r.rs?';background:#cfe8ff;padding:0 4px;border-radius:4px':'')+'">'+esc(ppNm(r.n,3))+'</b> <span class="lb">'+esc(r.k)+' · '+r.cat+(r.late?' · joined late: '+r.pd+' days paid':'')+'</span></span><span style="font-size:12px">Net <input type="number" min="0" data-id="'+r.id+'" value="'+(r.net||'')+'" style="width:80px" onchange="pySetP(this.dataset.id,this.value)"> unit '+r.unit+(r.late?' → earned '+r.er:'')+'</span><span style="font-size:12px">Leave '+r.tk+'/'+r.ent+' → left '+r.rem+' + Double Shifts '+(r.vds?r.dsg+' − V/DS '+r.vds+' = ':'')+r.ds+' = '+r.ex+'d = <b>'+r.ot+'</b> · Abs '+r.ab+(r.ab?' ('+r.runs+') −'+r.du+'u = −'+r.dd:'')+(r.out?' · <b style="color:#d64545">OUT</b>':'')+(r.sx?' · S/SM '+r.sx+' paid 100%':'')+' · Pen '+r.pen+(r.pdd?' (خصم '+r.pdy+' يوم = −'+r.pdd+')':(r.pen&&r.comp?' (خصم)':''))+' · Comp <b>'+r.cp+'</b>'+(r.late&&r.comp?' (not a full month)':'')+'</span><span style="font-size:13px"><b>'+r.tot+'</b></span></div>'});
+  R.forEach(function(r){T+=r.tot;h+='<div class="rr" style="flex-wrap:wrap"><span style="width:100%"><b style="color:'+(r.ng?'#0a7a35':'#0b4fb8')+(r.rs?';background:#cfe8ff;padding:0 4px;border-radius:4px':'')+'">'+esc(ppNm(r.n,3))+'</b> <span class="lb">'+esc(r.k)+' · '+r.cat+(r.late?' · joined late: '+r.pd+' days paid':'')+'</span></span><span style="font-size:12px">Net <input type="number" min="0" data-id="'+r.id+'" value="'+(r.net||'')+'" style="width:80px" onchange="pySetP(this.dataset.id,this.value)"> unit '+r.unit+(r.late?' → earned '+r.er:'')+'</span><span style="font-size:12px">Leave '+r.tk+'/'+r.ent+' → left '+r.rem0+(r.ended?'':' (counted at month end)')+' + Double Shifts '+(r.vds?r.dsg+' − V/DS '+r.vds+' = ':'')+r.ds+' → counted '+r.ex+'d = <b>'+r.ot+'</b> · Abs '+r.ab+(r.ab?' ('+r.runs+') −'+r.du+'u = −'+r.dd:'')+(r.out?' · <b style="color:#d64545">OUT</b>':'')+(r.sx?' · S/SM '+r.sx+' paid 100%':'')+' · Pen '+r.pen+(r.pdd?' (خصم '+r.pdy+' يوم = −'+r.pdd+')':(r.pen&&r.comp?' (خصم)':''))+' · Comp <b>'+r.cp+'</b>'+(r.late&&r.comp?' (not a full month)':'')+'</span><span style="font-size:13px">'+(r.pend?'<span class="lb">pending - ready at month end (so far '+r.proj+')</span>':'<b>'+r.tot+'</b>')+'</span></div>'});
   sheet(h+'<div class="rr"><b>Total</b><b>'+r2(T)+'</b></div><div class="bar"><button data-a="pyx">⬇ Excel</button><button data-a="x">Close</button></div>')}
 function xlsxOut(rows,widths,file){if(!DL){err('Excel export is not available here');return}
   var sd=rows.map(function(r,ri){return'<row r="'+(ri+1)+'">'+r.map(function(v,ci){if(v===''||v==null)return'';var ref=colL(ci)+(ri+1);if(typeof v=='object')return'<c r="'+ref+'"><f>'+esc(v.f)+'</f><v>'+v.v+'</v></c>';return typeof v=='number'?'<c r="'+ref+'"><v>'+v+'</v></c>':'<c r="'+ref+'" t="inlineStr"><is><t>'+esc(v)+'</t></is></c>'}).join('')+'</row>'}).join('');
@@ -1015,7 +1055,7 @@ function xlsxOut(rows,widths,file){if(!DL){err('Excel export is not available he
 function pyAbs(id){var D=days(),runs=[],n=0,out=false;D.forEach(function(d){var k0=key(d);if(jBef(id,k0))return;var c=get(id,k0);if(c=='R')out=true;if(c=='A')n++;else{if(n)runs.push(n);n=0}});if(n)runs.push(n);
   var u=0;runs.forEach(function(r){if(r>5)out=true;var m=Math.min(r,5);u+=m==1?2:2*m+1});return{u:u,runs:runs,out:out}}
 function pyXls(){var R=pyRows(),n=R.length,rows=[['م','الاسم','الكود','الوظيفة','الصافي','أيام العمل','الصافي المستحق','الوحدة (÷30)','الإجازة المستحقة','إجازات مأخوذة','إجازات متبقية','Double Shifts','أيام الإضافي','مبلغ الإضافي (×1.5)','أيام الغياب','وحدات خصم الغياب','خصم الغياب','الجزاءات','قيمة التعويض','التعويض المستحق','الإجمالي','ملاحظات','أيام خصم الجزاءات','خصم الجزاءات','راحه بدل تطبيق (V/DS)']];
-  R.forEach(function(r,i){var q=i+2;rows.push([i+1,r.n,r.k,r.cat,r.net,r.pd,{f:'ROUND(E'+q+'*F'+q+'/30,2)',v:r.er},{f:'ROUND(E'+q+'/30,2)',v:r.unit},r.ent,r.tk,{f:'MAX(0,I'+q+'-J'+q+')',v:r.rem},r.ds,{f:'K'+q+'+L'+q,v:r.ex},{f:'ROUND(M'+q+'*H'+q+'*1.5,2)',v:r.ot},r.ab,r.du,{f:'ROUND(P'+q+'*H'+q+',2)',v:r.dd},r.pen,r.comp,{f:'IF(AND(O'+q+'=0,R'+q+'=0),S'+q+',0)',v:r.cp},{f:'G'+q+'+N'+q+'+T'+q+'-Q'+q+'-X'+q,v:r.tot},(r.out?'OUT':'')+(r.rs?(r.out?' / ':'')+'مستقيل':''),r.pdy,{f:'ROUND(W'+q+'*H'+q+',2)',v:r.pdd},r.vds])});
+  R.forEach(function(r,i){var q=i+2;rows.push([i+1,r.n,r.k,r.cat,r.net,r.pd,(r.pend?0:{f:'ROUND(E'+q+'*F'+q+'/30,2)',v:r.er}),{f:'ROUND(E'+q+'/30,2)',v:r.unit},r.ent,r.tk,(r.ended?{f:'MAX(0,I'+q+'-J'+q+')',v:r.rem}:0),r.ds,{f:'K'+q+'+L'+q,v:r.ex},(r.pend?0:{f:'ROUND(M'+q+'*H'+q+'*1.5,2)',v:r.ot}),r.ab,r.du,(r.pend?0:{f:'ROUND(P'+q+'*H'+q+',2)',v:r.dd}),r.pen,r.comp,(r.pend?0:{f:'IF(AND(O'+q+'=0,R'+q+'=0),S'+q+',0)',v:r.cp}),(r.pend?0:{f:'G'+q+'+N'+q+'+T'+q+'-Q'+q+'-X'+q,v:r.tot}),(r.pend?'قيد الحساب - يحسب نهاية الفترة':'')+(r.out?(r.pend?' / ':'')+'OUT':'')+(r.rs?(r.out?' / ':'')+'مستقيل':''),r.pdy,(r.pend?0:{f:'ROUND(W'+q+'*H'+q+',2)',v:r.pdd}),r.vds])});
   var sum=function(c,k){return{f:'SUM('+c+'2:'+c+(n+1)+')',v:r2(R.reduce(function(a,r){return a+r[k]},0))}};
   rows.push(['','الإجمالي','','','','',sum('G','er'),'','','','','','',sum('N','ot'),'','',sum('Q','dd'),'','',sum('T','cp'),sum('U','tot'),'','',sum('X','pdd'),'']);
   xlsxOut(rows,[5,34,12,10,12,10,14,12,10,10,10,8,10,14,10,12,12,10,12,14,14,12,12,12,12],'payroll-'+pid()+'.xlsx')}
@@ -1625,7 +1665,7 @@ $("pd").onclick=function(){
       if(p[1])tx(p[1],nw-8,y+20,"9px sans-serif","#666","right","rtl");
       (function(){var vn=0,ar=aMap(p[3],D);D.forEach(function(d,i){var k=key(d),c=get(p[3],k);if(!c)return;var px=nw+i*cw;x.fillStyle=CC[c][0];x.fillRect(px,y,cw,rh);var sb=c=="V"?(++vn)+"/5":c=="A"?ar[k]:"";if(sb){tx(c,px+cw/2,y+9,"bold 10px sans-serif",CC[c][1]);tx(sb,px+cw/2,y+19,"bold 7px sans-serif",CC[c][1])}else if(c=="R")tx(i>0&&get(p[3],key(D[i-1]))=="A"&&parseInt(ar[key(D[i-1])])>=5?"OUT":"",px+cw/2,y+rh/2,"bold 8px sans-serif",CC[c][1]);else tx(kd(c),px+cw/2,y+rh/2,"bold 10px sans-serif",CC[c][1])})})();
       K.forEach(function(k,i){var v=t[k[0]];if(!v)return;var px=nw+D.length*cw+i*tw;x.fillStyle=CC[k[0]][0];x.fillRect(px,y,tw,rh);tx(v,px+tw/2,y+rh/2,"bold 11px sans-serif",CC[k[0]][1])});
-      tx(extra(t),ex+xw/2,y+rh/2,"bold 12px sans-serif","#111");
+      tx(extra(t,p[3]),ex+xw/2,y+rh/2,"bold 12px sans-serif","#111");
       y+=rh;ln(0,y,W,y,.5);
     });
   });
@@ -1645,7 +1685,7 @@ function pdf2(){
   if(!DL){err("PDF export is not available here");return}
   if(!window.jspdf){err("PDF tool did not load");return}
   var rows=[];
-  lay().forEach(function(g){g[1].forEach(function(p){var e=extra(tot(p[3])),c=RO.c[p[3]]||{};if(e>0)rows.push([c.fn||p[0],e,c.k||""])})});
+  lay().forEach(function(g){g[1].forEach(function(p){var e=extra(tot(p[3]),p[3]),c=RO.c[p[3]]||{};if(e>0)rows.push([c.fn||p[0],e,c.k||""])})});
   if(!rows.length){err("No overtime in this period");return}
   var im=new Image(),done=false;
   function go(){
@@ -1871,4 +1911,90 @@ window.arDays=window.arOpen;window.arOpen=P.home;window.alOpen=L.home;
 </body>
 </html>
 
+<script>
+/* LMD web v52 - Today dashboard (additive; reads existing data only) */
+(function(){
+var TAB='today',DQ=['today','attn','period','pay','quick','recent'],
+DN={today:'Today',attn:'Needs attention',period:'Pay period',pay:'Payroll snapshot',quick:'Quick actions',recent:'Last changes'};
+function dq(){var d=(RO.f||{}).dash||{},o=(d.o||[]).filter(function(x){return DQ.indexOf(x)>=0});DQ.forEach(function(x){if(o.indexOf(x)<0)o.push(x)});return{o:o,h:(d.h||[]).filter(function(x){return DQ.indexOf(x)>=0})}}
+function dsave(d){RO.f=Object.assign({},RO.f,{dash:d});saveRO()}
+function sn(n){return esc(ppNm(n,2))}
+function pill(e){return '<span class="dp" data-go="'+esc(e.id)+'">'+sn(e.n)+'</span>'}
+function emps(){var o=[];lay().forEach(function(g,gi){g[1].forEach(function(p){o.push({id:p[3],n:p[0],g:gi})})});return o}
+function card(id,t,b){return '<div class="dcard" data-c="'+id+'"><h3>'+t+'</h3>'+b+'</div>'}
+function fmt(n){return (Math.round(n*100)/100).toLocaleString('en-US')}
+function cToday(){
+  var D=days(),TK=key(new Date()),ks=D.map(key);
+  if(ks.indexOf(TK)<0)return card('today','Today','<div class="lb">Today is outside the period you are viewing. Use ‹ › above to go back to the current period.</div>');
+  var E=emps(),cnt={},un=[];
+  E.forEach(function(e){if(jBef(e.id,TK))return;var c=get(e.id,TK);if(!c)un.push(e);else cnt[c]=(cnt[c]||0)+1});
+  var ch=K.filter(function(k){return cnt[k[0]]||k[0]=='D'||k[0]=='N'}).map(function(k){return '<div class="dc '+k[0]+'"><b>'+(cnt[k[0]]||0)+'</b><span>'+kd(k[0])+'</span></div>'}).join('');
+  var h='<div class="dg">'+ch+'</div>';
+  h+=un.length?'<div class="dh">Not marked yet · '+un.length+'</div><div class="dpw">'+un.map(pill).join('')+'</div>':'<div class="dok">✓ Everyone is marked today</div>';
+  var d=new Date();return card('today','Today · '+d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}),h)}
+function cAttn(){
+  var D=days(),E=emps(),it=[];
+  var v=[];E.forEach(function(e){var bad=false;D.forEach(function(d){var k=key(d);if(get(e.id,k)=="V"&&jVok(e.id,k))bad=true});if(bad)v.push(e)});
+  if(v.length)it.push('<div class="di"><span>V before 6 days of work · '+v.length+'</span></div><div class="dpw">'+v.map(pill).join('')+'</div>');
+  var o=[];E.forEach(function(e){try{if(pyAbs(e.id).out)o.push(e)}catch(x){}});
+  if(o.length)it.push('<div class="di"><span style="color:#ff453a">OUT · '+o.length+'</span></div><div class="dpw">'+o.map(pill).join('')+'</div>');
+  var t=(RO.f||{}).lastBk,bd=t?Math.floor((Date.now()-new Date(t).getTime())/864e5):999;
+  if(bd>=7)it.push('<div class="di" data-q="bk"><span>'+(t?'Last backup '+bd+' days ago':'No backup saved yet')+'</span><i>Back up ›</i></div>');
+  var fo=(RO.fm||[]).filter(function(e){return e.tr!='returned'&&pinfo(e.i)}).length;
+  if(fo)it.push('<div class="di" data-q="tr"><span>Forms not returned yet · '+fo+'</span><i>Open ›</i></div>');
+  return card('attn','Needs attention',it.length?it.join(''):'<div class="dok">✓ All clear</div>')}
+function cPeriod(){
+  var D=days(),TK=key(new Date()),ks=D.map(key),i=ks.indexOf(TK),n=D.length,h;
+  var a=D[0].toLocaleDateString('en-GB',{day:'numeric',month:'short'}),b=D[n-1].toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+  if(i>=0)h='<div class="dbig">'+(n-1-i)+' <small>days left</small></div><div class="pg"><i style="width:'+Math.round((i+1)/n*100)+'%"></i></div><div class="lb dsm">Day '+(i+1)+' of '+n+' · '+a+' → '+b+'</div>';
+  else if(TK>ks[n-1])h='<div class="dbig" style="font-size:20px">Period ended</div><div class="pg"><i style="width:100%"></i></div><div class="lb dsm">'+a+' → '+b+' · payroll is complete</div>';
+  else h='<div class="dbig" style="font-size:20px">Not started</div><div class="lb dsm">'+a+' → '+b+'</div>';
+  return card('period','Pay period',h)}
+function cPay(){
+  var R;try{R=pyRows()}catch(x){return card('pay','Payroll snapshot','<div class="lb">Open Payroll to see the figures.</div>')}
+  var T=0,O=0,Dd=0,P=0;R.forEach(function(r){T+=r.tot;O+=r.ot;Dd+=r.dd+r.pdd;if(r.pend)P++});
+  var h='<div class="dtap" data-q="py"><div class="dbig">'+fmt(T)+'</div><div class="dgr"><div><b>'+fmt(O)+'</b><span>Overtime</span></div><div><b>'+fmt(Dd)+'</b><span>Deductions</span></div><div><b>'+P+'</b><span>Pending</span></div></div></div>';
+  return card('pay','Payroll snapshot',h)}
+function cQuick(){
+  var q=[['pd','📄','Month PDF'],['p2','⏱','Overtime PDF'],['bk','⬇','Backup'],['fx','🗂','Create form'],['xl','📗','Excel'],['tr','📋','Track forms'],['rc','📒','Roll-call'],['fu','📊','Follow-up']];
+  return card('quick','Quick actions','<div class="dqg">'+q.map(function(x){return '<button data-q="'+x[0]+'"><b>'+x[1]+'</b>'+x[2]+'</button>'}).join('')+'</div>')}
+function cRecent(){
+  var h='',L=hist.slice(-4).reverse();
+  if(!L.length)return card('recent','Last changes','<div class="lb">No changes yet in this session.</div>');
+  L.forEach(function(pv){var ks=Object.keys(pv);if(!ks.length)return;var k=ks[0],id=k.slice(0,-11),dt=k.slice(-10),i=pinfo(id),nv=cells[k]||'—',ov=pv[k]||'—';
+    h+='<div class="rr"><span>'+(i?sn(i[0][0]):esc(id))+' <span class="lb">· '+fd(dt).slice(0,5)+'</span></span><span><b>'+kd(ov)+' → '+kd(nv)+'</b>'+(ks.length>1?' <span class="lb">+'+(ks.length-1)+'</span>':'')+'</span></div>'});
+  return card('recent','Last changes',h+'<div class="bar" style="padding:10px 0 0"><button data-q="un">↶ Undo last</button></div>')}
+var F={today:cToday,attn:cAttn,period:cPeriod,pay:cPay,quick:cQuick,recent:cRecent};
+window.dashRender=function(){
+  var el=$('dash');if(!el||TAB!='today')return;
+  if(!ready){el.innerHTML='<div class="dcard"><div class="lb">Loading…</div></div>';return}
+  var d=dq(),h='';
+  d.o.forEach(function(id){if(d.h.indexOf(id)>=0)return;try{h+=F[id]()}catch(x){h+=card(id,DN[id],'<div class="lb">Could not load this card.</div>')}});
+  h+='<div class="dcust"><button data-q="cust">⚙ Customize cards</button></div>';
+  el.innerHTML=h};
+function custOpen(){
+  var d=dq(),h='<b>Customize the Today screen</b><div class="lb" style="font-size:12px;margin-top:4px">Show, hide or reorder the cards.</div>';
+  d.o.forEach(function(id,i){var on=d.h.indexOf(id)<0;h+='<div class="rr"><span>'+DN[id]+'</span><span style="display:flex;gap:6px"><button data-dq="up" data-i="'+id+'"'+(i?'':' disabled')+'>▲</button><button data-dq="dn" data-i="'+id+'"'+(i<d.o.length-1?'':' disabled')+'>▼</button><button data-dq="tg" data-i="'+id+'" style="min-width:76px">'+(on?'Shown':'Hidden')+'</button></span></div>'});
+  sheet(h+'<div class="bar"><button data-a="x">Done</button></div>')}
+$('sh').addEventListener('click',function(e){var b=e.target.closest('[data-dq]');if(!b)return;var d=dq(),id=b.dataset.i,i=d.o.indexOf(id),a=b.dataset.dq;
+  if(a=='up'&&i>0){d.o.splice(i,1);d.o.splice(i-1,0,id)}
+  else if(a=='dn'&&i<d.o.length-1){d.o.splice(i,1);d.o.splice(i+1,0,id)}
+  else if(a=='tg'){var j=d.h.indexOf(id);if(j>=0)d.h.splice(j,1);else d.h.push(id)}
+  dsave(d);custOpen();dashRender()});
+$('dash').addEventListener('click',function(e){var t=e.target.closest('[data-go],[data-q]');if(!t)return;
+  if(t.dataset.go){var id=t.dataset.go;tabGo('roster');setTimeout(function(){var c=document.querySelector('td.n[data-id="'+id+'"]');if(c)c.scrollIntoView({block:'center'})},40);return}
+  var q=t.dataset.q;if(q=='cust'){custOpen();return}var b=$(q);if(b)b.click()});
+window.tabGo=function(t){TAB=t;var td=t=='today';
+  $('dash').style.display=td?'block':'none';
+  var w=document.querySelector('.w');if(w)w.style.display=td?'none':'';
+  $('tbar').style.display=td?'none':'';$('pal').style.display=td?'none':'';
+  [].forEach.call(document.querySelectorAll('#tab [data-t]'),function(b){b.classList.toggle('on',b.dataset.t==t)});
+  if(td)dashRender();else window.scrollTo(0,0)};
+$('tab').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
+  if(b.dataset.t){tabGo(b.dataset.t);return}
+  var q=b.dataset.q;if(q){var x=$(q);if(x)x.click()}});
+var _r=render;render=function(){_r.apply(this,arguments);if(TAB=='today')dashRender()};
+tabGo('today');
+})();
+</script>
 </body></html>
