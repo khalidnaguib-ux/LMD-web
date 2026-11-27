@@ -3,7 +3,7 @@
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
-<title>LMD web v59</title>
+<title>LMD web v60</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -11,7 +11,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
-/* LMD web v59 - iOS card look (CSS only). Light + Dark follow the system. */
+/* LMD web v60 - iOS card look (CSS only). Light + Dark follow the system. */
 :root{--bg:#f2f2f7;--card:#fff;--tx:#1c1c1e;--mu:#6e6e73;--bd:#e0e0e6;--fr:#f2f2f7;--ac:#007aff;--ac2:rgba(0,122,255,.14);--or:#ff9500;--sh1:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.06);--bl:saturate(180%) blur(18px);color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--card:#1c1c1e;--tx:#f5f5f7;--mu:#98989f;--bd:#38383a;--fr:#2c2c2e;--ac:#0a84ff;--ac2:rgba(10,132,255,.22);--or:#ff9f0a;--sh1:0 0 0 .5px rgba(255,255,255,.06);color-scheme:dark}}
 :root[data-theme="dark"]{--bg:#000;--card:#1c1c1e;--tx:#f5f5f7;--mu:#98989f;--bd:#38383a;--fr:#2c2c2e;--ac:#0a84ff;--ac2:rgba(10,132,255,.22);--or:#ff9f0a;--sh1:0 0 0 .5px rgba(255,255,255,.06);color-scheme:dark}
@@ -139,7 +139,7 @@ td.t.VDS{font-size:11px}
 </head>
 <body>
 <header>
-<div class="top"><button id="pv">‹</button><div><b id="ttl"></b><div style="font-size:11px;color:var(--mu);margin-top:2px">LMD web v59</div></div><button id="nx">›</button></div>
+<div class="top"><button id="pv">‹</button><div><b id="ttl"></b><div style="font-size:11px;color:var(--mu);margin-top:2px">LMD web v60</div></div><button id="nx">›</button></div>
 <div class="pal" id="pal"></div>
 <div class="hint"><span id="st">…</span></div><div id="bkn" class="hint" style="display:none;color:#d2691e"></div>
 </header>
@@ -148,7 +148,7 @@ td.t.VDS{font-size:11px}
 <div class="bar" id="tbar"><button id="un" disabled style="opacity:.4">↶ Undo</button><button id="bk">⬇ Backup</button><button id="pd">Month PDF</button><button id="p2">Overtime PDF</button><button id="mm">📊 LMD Monthly</button><button id="fx">🗂 Create form</button><button id="nm">Names</button><button id="cb">Contacts</button><button id="rc">📒 Roll-call</button><button id="rp">📥 Shift report</button><button id="fu">📊 Follow-up</button><button id="al">🗓 Landmark archive</button><button id="ar">🔒 Archive</button><button id="xl">📗 Excel</button><button id="tr">📋 Track forms</button><button id="py">💰 Payroll</button><button id="hs">📲 Home Screen</button><button id="tbs">✎ Arrange icons</button><button id="tbr">↺ Original order</button><div id="tbh" style="display:none">Tap one icon, then tap another to swap them. Tap “Done” when finished.</div></div>
 <div id="er"></div><div id="sh"></div>
 <nav id="tab"><button data-t="today" class="on"><b>🏠</b>Today</button><button data-t="roster"><b>📅</b>Roster</button><button data-q="py"><b>💰</b>Pay</button><button data-q="fx"><b>🗂</b>Forms</button></nav>
-<div id="lg"><div><b>LMD web v59</b><p>Sign in with Google to open your shift sheets.<br>تسجيل الدخول للوصول إلى البيانات</p><button id="lgb" disabled>Loading…</button><div id="lgm"></div></div></div>
+<div id="lg"><div><b>LMD web v60</b><p>Sign in with Google to open your shift sheets.<br>تسجيل الدخول للوصول إلى البيانات</p><button id="lgb" disabled>Loading…</button><div id="lgm"></div></div></div>
 <script>
 var $=function(i){return document.getElementById(i)};
 var K=[["D","نهاري"],["N","ليلي"],["DS","تطبيق"],["V","إجازة"],["Z","مرضي"],["C","عارضة"],["A","غياب"],["S","طبي"],["SM","راحه تبديل ورديه"],["VDS","راحه بدل تطبيق"]];
@@ -2180,7 +2180,7 @@ window.arDays=window.arOpen;window.arOpen=P.home;window.alOpen=L.home;
 </html>
 
 <script>
-/* LMD web v59 - Today dashboard (additive; reads existing data only) */
+/* LMD web v60 - Today dashboard (additive; reads existing data only) */
 (function(){
 var TAB='today',DQ=['shift','today','attn','period','pay','quick','recent'],
 DN={shift:'Shift start',today:'Today',attn:'Needs attention',period:'Pay period',pay:'Payroll snapshot',quick:'Quick actions',recent:'Last changes'};
@@ -2194,12 +2194,12 @@ function fmt(n){return (Math.round(n*100)/100).toLocaleString('en-US')}
 function cToday(){
   var D=days(),TK=key(bizNow()),ks=D.map(key);
   if(ks.indexOf(TK)<0)return card('today','Today','<div class="lb">Today is outside the period you are viewing. Use ‹ › above to go back to the current period.</div>');
-  var E=emps(),cnt={},un=[];
+  var E=emps(),cnt={},un=[],AC=(RO.f||{}).act||{};
   var real={D:0,N:0};
-  E.forEach(function(e){if(jBef(e.id,TK))return;var c=get(e.id,TK);if(!c){un.push(e);return}cnt[c]=(cnt[c]||0)+1;var nt=e.g==3||(e.g<2&&e.s=='N');if(c=='D')real.D++;else if(c=='N')real.N++;else if(c=='DS'){if(nt)real.N++;else real.D++}});
+  E.forEach(function(e){if(jBef(e.id,TK))return;var c=get(e.id,TK);if(!c){un.push(e);return}if(e.g<2)return;/* v60: guards (فرد) only; a DS (day + night) counts in both; an acting supervisor (قائم بالعمل) is not counted in that shift */var ad=AC[TK+'_d'],an=AC[TK+'_n'];if(!(c=='DS'&&(e.id==ad||e.id==an)))cnt[c]=(cnt[c]||0)+1;if((c=='D'||c=='DS')&&e.id!=ad)real.D++;if((c=='N'||c=='DS')&&e.id!=an)real.N++});
   cnt.D=real.D;cnt.N=real.N;
   var ch=K.filter(function(k){return cnt[k[0]]||k[0]=='D'||k[0]=='N'}).map(function(k){return '<div class="dc '+k[0]+'"><b>'+(cnt[k[0]]||0)+'</b><span>'+kd(k[0])+'</span></div>'}).join('');
-  var h='<div class="dg">'+ch+'</div><div class="lb dsm">D and N = real attendance (a double shift counts in his own shift) · DS = how many did a double shift</div>';
+  var h='<div class="dg">'+ch+'</div><div class="lb dsm">Guards (فرد) only, not an acting supervisor · D and N = guards on the ground in that shift, a DS (day + night on the same date) counts in both · DS = how many did a double shift</div>';
   h+=un.length?'<div class="dh">Not marked yet · '+un.length+'</div><div class="dpw">'+un.map(pill).join('')+'</div>':'<div class="dok">✓ Everyone is marked today</div>';
   var d=bizNow();return card('today','Today · '+d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}),h)}
 function cAttn(){

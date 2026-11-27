@@ -14,7 +14,7 @@ This repository is the **LMD web** app: a private Arabic/English guard-shift ros
 - Business day runs 9:00 am to 9:00 am next day: use `bizNow()` (now minus 9 hours) for "today" and period logic.
 - Pay period = 26th to 25th (`days()`, `pid()`). Status codes: D, N, DS, V, Z, C, A, S, SM, VDS (shown "V/DS"), R (OUT).
 - Roster data is stored sharded in Firestore (manifest doc `roster` plus `r-<name>-<i>` chunks) because of the 1 MB document limit and no nested arrays. Never store the roster as one document.
-- Home screen is the Today dashboard (cards) with a bottom tab bar (Today, Roster, Pay, Forms). D and N counts there show real attendance; a DS counts in the employee's own shift.
+- Home screen is the Today dashboard (cards) with a bottom tab bar (Today, Roster, Pay, Forms). D and N counts there show guards (فرد) only on the ground in that shift; a DS (day + night on the same date) counts in both D and N; DS shows how many did a double shift. A guard set as acting supervisor (قائم بالعمل, RO.f.act[date_d|n]) is not counted as a guard in that shift.
 
 ## Payroll rules (keep unless the user changes them)
 - unit = net / 30. While the period is open, earned net = days from joining day (or period start) up to the last marked day; after the period ends, all days from joining count.
