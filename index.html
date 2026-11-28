@@ -3,7 +3,7 @@
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
-<title>LMD web v60</title>
+<title>LMD web v61</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -11,7 +11,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
-/* LMD web v60 - iOS card look (CSS only). Light + Dark follow the system. */
+/* LMD web v61 - iOS card look (CSS only). Light + Dark follow the system. */
 :root{--bg:#f2f2f7;--card:#fff;--tx:#1c1c1e;--mu:#6e6e73;--bd:#e0e0e6;--fr:#f2f2f7;--ac:#007aff;--ac2:rgba(0,122,255,.14);--or:#ff9500;--sh1:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.06);--bl:saturate(180%) blur(18px);color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--card:#1c1c1e;--tx:#f5f5f7;--mu:#98989f;--bd:#38383a;--fr:#2c2c2e;--ac:#0a84ff;--ac2:rgba(10,132,255,.22);--or:#ff9f0a;--sh1:0 0 0 .5px rgba(255,255,255,.06);color-scheme:dark}}
 :root[data-theme="dark"]{--bg:#000;--card:#1c1c1e;--tx:#f5f5f7;--mu:#98989f;--bd:#38383a;--fr:#2c2c2e;--ac:#0a84ff;--ac2:rgba(10,132,255,.22);--or:#ff9f0a;--sh1:0 0 0 .5px rgba(255,255,255,.06);color-scheme:dark}
@@ -139,7 +139,7 @@ td.t.VDS{font-size:11px}
 </head>
 <body>
 <header>
-<div class="top"><button id="pv">‹</button><div><b id="ttl"></b><div style="font-size:11px;color:var(--mu);margin-top:2px">LMD web v60</div></div><button id="nx">›</button></div>
+<div class="top"><button id="pv">‹</button><div><b id="ttl"></b><div style="font-size:11px;color:var(--mu);margin-top:2px">LMD web v61</div></div><button id="nx">›</button></div>
 <div class="pal" id="pal"></div>
 <div class="hint"><span id="st">…</span></div><div id="bkn" class="hint" style="display:none;color:#d2691e"></div>
 </header>
@@ -148,7 +148,7 @@ td.t.VDS{font-size:11px}
 <div class="bar" id="tbar"><button id="un" disabled style="opacity:.4">↶ Undo</button><button id="bk">⬇ Backup</button><button id="pd">Month PDF</button><button id="p2">Overtime PDF</button><button id="mm">📊 LMD Monthly</button><button id="fx">🗂 Create form</button><button id="nm">Names</button><button id="cb">Contacts</button><button id="rc">📒 Roll-call</button><button id="rp">📥 Shift report</button><button id="fu">📊 Follow-up</button><button id="al">🗓 Landmark archive</button><button id="ar">🔒 Archive</button><button id="xl">📗 Excel</button><button id="tr">📋 Track forms</button><button id="py">💰 Payroll</button><button id="hs">📲 Home Screen</button><button id="tbs">✎ Arrange icons</button><button id="tbr">↺ Original order</button><div id="tbh" style="display:none">Tap one icon, then tap another to swap them. Tap “Done” when finished.</div></div>
 <div id="er"></div><div id="sh"></div>
 <nav id="tab"><button data-t="today" class="on"><b>🏠</b>Today</button><button data-t="roster"><b>📅</b>Roster</button><button data-q="py"><b>💰</b>Pay</button><button data-q="fx"><b>🗂</b>Forms</button></nav>
-<div id="lg"><div><b>LMD web v60</b><p>Sign in with Google to open your shift sheets.<br>تسجيل الدخول للوصول إلى البيانات</p><button id="lgb" disabled>Loading…</button><div id="lgm"></div></div></div>
+<div id="lg"><div><b>LMD web v61</b><p>Sign in with Google to open your shift sheets.<br>تسجيل الدخول للوصول إلى البيانات</p><button id="lgb" disabled>Loading…</button><div id="lgm"></div></div></div>
 <script>
 var $=function(i){return document.getElementById(i)};
 var K=[["D","نهاري"],["N","ليلي"],["DS","تطبيق"],["V","إجازة"],["Z","مرضي"],["C","عارضة"],["A","غياب"],["S","طبي"],["SM","راحه تبديل ورديه"],["VDS","راحه بدل تطبيق"]];
@@ -2180,11 +2180,11 @@ window.arDays=window.arOpen;window.arOpen=P.home;window.alOpen=L.home;
 </html>
 
 <script>
-/* LMD web v60 - Today dashboard (additive; reads existing data only) */
+/* LMD web v61 - Today dashboard (additive; reads existing data only) */
 (function(){
-var TAB='today',DQ=['shift','today','attn','period','pay','quick','recent'],
-DN={shift:'Shift start',today:'Today',attn:'Needs attention',period:'Pay period',pay:'Payroll snapshot',quick:'Quick actions',recent:'Last changes'};
-function dq(){var d=(RO.f||{}).dash||{},o=(d.o||[]).filter(function(x){return DQ.indexOf(x)>=0});DQ.forEach(function(x){if(o.indexOf(x)<0){if(x=='shift')o.unshift(x);else o.push(x)}});return{o:o,h:(d.h||[]).filter(function(x){return DQ.indexOf(x)>=0})}}
+var TAB='today',DQ=['shift','asst','today','attn','period','pay','quick','recent'],
+DN={shift:'Shift start',asst:'Assistant',today:'Today',attn:'Needs attention',period:'Pay period',pay:'Payroll snapshot',quick:'Quick actions',recent:'Last changes'};
+function dq(){var d=(RO.f||{}).dash||{},o=(d.o||[]).filter(function(x){return DQ.indexOf(x)>=0});DQ.forEach(function(x){if(o.indexOf(x)<0){if(x=='shift')o.unshift(x);else if(x=='asst')o.splice(o.indexOf('shift')+1,0,x);else o.push(x)}});return{o:o,h:(d.h||[]).filter(function(x){return DQ.indexOf(x)>=0})}}
 function dsave(d){RO.f=Object.assign({},RO.f,{dash:d});saveRO()}
 function sn(n){return esc(ppNm(n,2))}
 function pill(e){return '<span class="dp" data-go="'+esc(e.id)+'">'+sn(e.n)+'</span>'}
@@ -2194,12 +2194,12 @@ function fmt(n){return (Math.round(n*100)/100).toLocaleString('en-US')}
 function cToday(){
   var D=days(),TK=key(bizNow()),ks=D.map(key);
   if(ks.indexOf(TK)<0)return card('today','Today','<div class="lb">Today is outside the period you are viewing. Use ‹ › above to go back to the current period.</div>');
-  var E=emps(),cnt={},un=[],AC=(RO.f||{}).act||{};
+  var E=emps(),cnt={},un=[];
   var real={D:0,N:0};
-  E.forEach(function(e){if(jBef(e.id,TK))return;var c=get(e.id,TK);if(!c){un.push(e);return}if(e.g<2)return;/* v60: guards (فرد) only; a DS (day + night) counts in both; an acting supervisor (قائم بالعمل) is not counted in that shift */var ad=AC[TK+'_d'],an=AC[TK+'_n'];if(!(c=='DS'&&(e.id==ad||e.id==an)))cnt[c]=(cnt[c]||0)+1;if((c=='D'||c=='DS')&&e.id!=ad)real.D++;if((c=='N'||c=='DS')&&e.id!=an)real.N++});
+  E.forEach(function(e){if(jBef(e.id,TK))return;var c=get(e.id,TK);if(!c){un.push(e);return}if(e.g<2)return;/* v60: guards (فرد) only; a DS (day + night) counts in both */cnt[c]=(cnt[c]||0)+1;if(c=='D'||c=='DS')real.D++;if(c=='N'||c=='DS')real.N++});
   cnt.D=real.D;cnt.N=real.N;
   var ch=K.filter(function(k){return cnt[k[0]]||k[0]=='D'||k[0]=='N'}).map(function(k){return '<div class="dc '+k[0]+'"><b>'+(cnt[k[0]]||0)+'</b><span>'+kd(k[0])+'</span></div>'}).join('');
-  var h='<div class="dg">'+ch+'</div><div class="lb dsm">Guards (فرد) only, not an acting supervisor · D and N = guards on the ground in that shift, a DS (day + night on the same date) counts in both · DS = how many did a double shift</div>';
+  var h='<div class="dg">'+ch+'</div><div class="lb dsm">Guards (فرد) only · D and N = guards on the ground in that shift, a DS (day + night on the same date) counts in both · DS = how many did a double shift</div>';
   h+=un.length?'<div class="dh">Not marked yet · '+un.length+'</div><div class="dpw">'+un.map(pill).join('')+'</div>':'<div class="dok">✓ Everyone is marked today</div>';
   var d=bizNow();return card('today','Today · '+d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}),h)}
 function cAttn(){
@@ -2257,13 +2257,63 @@ function ssSend(){
   var N=ssNow();
   sheet('<b>Send to upper management</b><div class="lb" style="margin:6px 0">'+(N.sh=='D'?'Day':'Night')+' shift · '+N.dk+' · original paper</div><div class="bar"><button id="ssi" disabled onclick="ssShare(\'img\')">Preparing…</button></div><div class="bar"><button id="ssp" disabled onclick="ssShare(\'pdf\')">Preparing…</button></div><div class="bar"><button onclick="ssMark()">Mark as sent / not sent</button><button data-a="x">Close</button></div><div class="lb" style="font-size:12px">Pick WhatsApp in the share sheet, then choose the chat.</div>');
   ssPrep()}
+/* ===== Assistant (text only): follows LMD-web-policy.md section 7. Warns and suggests; never changes data. ===== */
+function asEl(){var n=new Date(),h=n.getHours(),N=ssNow();return N.sh=='D'?h-9:(h>=21?h-21:h+3)}
+function asPrev(){var N=ssNow(),b=bizNow();if(N.sh=='N'){return{sh:'D',sk:'d',dk:N.dk}}var p=new Date(b.getFullYear(),b.getMonth(),b.getDate()-1);return{sh:'N',sk:'n',dk:key(p)}}
+function asDis(){try{var o=JSON.parse(localStorage.getItem('lmd_asdis')||'{}');return o}catch(e){return{}}}
+function asDisSet(dk,id){try{var o={};o[dk]=(asDis()[dk]||[]).concat([id]);localStorage.setItem('lmd_asdis',JSON.stringify(o))}catch(e){}}
+function asList(){
+  var W=[],N=ssNow(),f=RO.f||{},el=asEl(),hr=new Date().getHours(),quiet=hr<7,E=emps(),D=days(),TK=N.dk;
+  function add(id,lv,t,go){W.push({id:id,lv:lv,t:t,go:go||''})}
+  /* 1 shift report not applied */
+  if(el>=1&&!(f.rpt||{})[N.k])add('rp','n','The '+(N.sh=='D'?'day':'night')+' shift started '+el+' hour'+(el>1?'s':'')+' ago and its report is not applied yet.','rp');
+  /* 2 not everyone marked */
+  if(el>=2){var un=0;E.forEach(function(e){if(!jBef(e.id,TK)&&!get(e.id,TK))un++});if(un)add('un','n',un+' '+(un>1?'people have':'person has')+' no status today.','tab:roster')}
+  /* 3 V too early */
+  var v=0;E.forEach(function(e){var bad=false;D.forEach(function(d){var k=key(d);if(get(e.id,k)=="V"&&jVok(e.id,k))bad=true});if(bad)v++});
+  if(v)add('v','i','V entered before 6 days of work · '+v+' guard'+(v>1?'s':'')+'.','tab:roster');
+  /* 4 heading to OUT (4 or more A in a row) and 11 marked after OUT */
+  var a4=0,ro=0;E.forEach(function(e){var run=0,mx=0,out=false,back=false;D.forEach(function(d){var k=key(d);if(k>TK||jBef(e.id,k))return;var c=get(e.id,k);if(c=='R')out=true;else if(out&&(c=='D'||c=='N'||c=='DS'))back=true;if(c=='A'){run++;if(run>mx)mx=run}else run=0});if(mx>=4&&!out&&mx<=5)a4++;if(back)ro++});
+  if(a4)add('a4','i',a4+' guard'+(a4>1?'s have':' has')+' 4 or more A in a row. 6 in a row means OUT.','tab:roster');
+  if(ro)add('ro','i','Someone is marked at work after being OUT. Please check.','tab:roster');
+  /* 5 forms not returned for 3 days or more */
+  var fo=(RO.fm||[]).filter(function(e){if(e.tr=='returned'||!pinfo(e.i))return false;var d=new Date(String(e.d||'')+'T12:00:00');return!isNaN(d)&&(bizNow()-d)>=3*864e5}).length;
+  if(fo)add('fo','n',fo+' form'+(fo>1?'s are':' is')+' not returned after 3 days or more.','tr');
+  /* 6 and 7 earlier shift not approved / not sent */
+  var P=asPrev(),pap=(f.ap||{})[P.dk+'_'+P.sk]||{},pss=(f.ss||{})[P.dk+'_'+P.sh]||{},pdn=pap.m&&pap.s;
+  if(!pdn)add('pa','n','The '+(P.sh=='D'?'day':'night')+' shift is finished and its roll-call is not approved yet.','rc');
+  else if(!pss.s)add('ps','n','The '+(P.sh=='D'?'day':'night')+' shift is approved but not sent to upper management yet.','rc');
+  var cap=(f.ap||{})[N.dk+'_'+N.sk]||{};if(cap.m&&cap.s&&!((f.ss||{})[N.k]||{}).s)add('cs','n','This shift is approved but not sent yet.','shift');
+  /* 8 backup */
+  var t=f.lastBk,bd=t?Math.floor((Date.now()-new Date(t).getTime())/864e5):999;if(bd>=7)add('bk','n',t?'Last backup was '+bd+' days ago.':'No backup saved yet.','bk');
+  /* 9 payroll week (from the 19th to the end of the period) and 10 month end */
+  var b=bizNow(),dd=b.getDate();
+  if(dd>=19&&dd<=25){var out=0,pn=0;try{E.forEach(function(e){if(pyAbs(e.id).out)out++});pyRows().forEach(function(r){pn+=(r.dd||0)+(r.pdd||0)})}catch(x){}
+    add('pw','n','Payroll week: '+(out?out+' OUT, ':'')+(pn?'deductions in this period. ':'')+'review Payroll before the period ends.','py')}
+  var last=D[D.length-1],left=Math.round((new Date(last.getFullYear(),last.getMonth(),last.getDate())-new Date(b.getFullYear(),b.getMonth(),b.getDate()))/864e5);
+  if(left>=0&&left<=1)add('me','n','The period ends '+(left?'tomorrow':'today')+'. Make LMD Monthly and the archive.','mm');
+  var dis=asDis()[TK]||[];
+  return W.filter(function(w){return dis.indexOf(w.id)<0&&(!quiet||w.lv=='i')}).sort(function(a,b2){return(a.lv=='i'?0:1)-(b2.lv=='i'?0:1)})}
+function cAsst(){
+  var hr=new Date().getHours(),g=hr>=5&&hr<12?'Good morning':hr<17&&hr>=12?'Good afternoon':'Good evening',L=asList(),N=ssNow(),f=RO.f||{},ss=(f.ss||{})[N.k]||{};
+  var h='<div class="lb" style="margin:-2px 0 8px;font-size:13px">'+g+'.</div>';
+  if(!L.length){var done=!!(f.rpt||{})[N.k]&&ss.s;h+='<div class="dok">'+(done?'All steps done. Nice work ✓':'✓ Nothing needs you right now.')+'</div>'}
+  else{L.slice(0,4).forEach(function(w){h+='<div class="di" data-as="'+w.go+'" style="cursor:pointer;align-items:flex-start;gap:8px"><span style="flex:1">'+(w.lv=='i'?'<b style="color:#ff453a">Important · </b>':'')+esc(w.t)+'</span><i data-asx="'+w.id+'" style="font-style:normal;color:var(--mu);padding:0 4px" title="Hide for today">✕</i></div>'});
+    if(L.length>4)h+='<div class="lb dsm">+'+(L.length-4)+' more</div>'}
+  h+='<div class="bar" style="padding:10px 0 0"><button data-asi="1">💡 Idea for the app</button></div>';
+  return card('asst','Assistant',h)}
+function asIdeas(){
+  var I=(RO.f||{}).ideas||[],h='<b>Idea for the app</b><div class="lb" style="font-size:12px;margin:4px 0 6px">Write it in your own words. It is saved, and you can bring the list to Claude.</div><textarea id="asit" rows="3" dir="auto" placeholder="e.g. I always tap X then Y, make it one tap" style="width:100%;font:inherit;padding:10px;border-radius:12px;border:1px solid var(--bd);background:var(--card);color:inherit"></textarea><div class="bar"><button data-asv="1">Save idea</button><button data-a="x">Close</button></div>';
+  if(I.length){h+='<div class="lb" style="margin-top:8px">Saved ideas · '+I.length+'</div>';I.slice().reverse().slice(0,15).forEach(function(x,i){h+='<div class="rr"><span style="flex:1">'+esc(x.t)+'<span class="lb"> · '+new Date(x.at).toLocaleDateString('en-GB',{day:'numeric',month:'short'})+'</span></span><button data-asd="'+(I.length-1-i)+'">✕</button></div>'})}
+  sheet(h)}
+function asIdeasSave(){var t=($('asit')||{}).value;t=(t||'').trim();if(!t){err('Write the idea first','#8a8a82',1800);return}var f=Object.assign({},RO.f),I=(f.ideas||[]).slice();I.push({t:t.slice(0,500),at:Date.now()});f.ideas=I.slice(-100);RO.f=f;saveRO();err('Idea saved ✓','#2f9e5b',1800);asIdeas()}
 function cRecent(){
   var h='',L=hist.slice(-4).reverse();
   if(!L.length)return card('recent','Last changes','<div class="lb">No changes yet in this session.</div>');
   L.forEach(function(pv){var ks=Object.keys(pv);if(!ks.length)return;var k=ks[0],id=k.slice(0,-11),dt=k.slice(-10),i=pinfo(id),nv=cells[k]||'—',ov=pv[k]||'—';
     h+='<div class="rr"><span>'+(i?sn(i[0][0]):esc(id))+' <span class="lb">· '+fd(dt).slice(0,5)+'</span></span><span><b>'+kd(ov)+' → '+kd(nv)+'</b>'+(ks.length>1?' <span class="lb">+'+(ks.length-1)+'</span>':'')+'</span></div>'});
   return card('recent','Last changes',h+'<div class="bar" style="padding:10px 0 0"><button data-q="un">↶ Undo last</button></div>')}
-var F={shift:cShift,today:cToday,attn:cAttn,period:cPeriod,pay:cPay,quick:cQuick,recent:cRecent};
+var F={asst:cAsst,shift:cShift,today:cToday,attn:cAttn,period:cPeriod,pay:cPay,quick:cQuick,recent:cRecent};
 window.dashRender=function(){
   var el=$('dash');if(!el||TAB!='today')return;
   if(!ready){el.innerHTML='<div class="dcard"><div class="lb">Loading…</div></div>';return}
@@ -2275,12 +2325,15 @@ function custOpen(){
   var d=dq(),h='<b>Customize the Today screen</b><div class="lb" style="font-size:12px;margin-top:4px">Show, hide or reorder the cards.</div>';
   d.o.forEach(function(id,i){var on=d.h.indexOf(id)<0;h+='<div class="rr"><span>'+DN[id]+'</span><span style="display:flex;gap:6px"><button data-dq="up" data-i="'+id+'"'+(i?'':' disabled')+'>▲</button><button data-dq="dn" data-i="'+id+'"'+(i<d.o.length-1?'':' disabled')+'>▼</button><button data-dq="tg" data-i="'+id+'" style="min-width:76px">'+(on?'Shown':'Hidden')+'</button></span></div>'});
   sheet(h+'<div class="bar"><button data-a="x">Done</button></div>')}
-$('sh').addEventListener('click',function(e){var b=e.target.closest('[data-dq]');if(!b)return;var d=dq(),id=b.dataset.i,i=d.o.indexOf(id),a=b.dataset.dq;
+$('sh').addEventListener('click',function(e){var v=e.target.closest('[data-asv]');if(v){asIdeasSave();return}var dl=e.target.closest('[data-asd]');if(dl){var f=Object.assign({},RO.f),I=(f.ideas||[]).slice();I.splice(+dl.dataset.asd,1);f.ideas=I;RO.f=f;saveRO();asIdeas();return}var b=e.target.closest('[data-dq]');if(!b)return;var d=dq(),id=b.dataset.i,i=d.o.indexOf(id),a=b.dataset.dq;
   if(a=='up'&&i>0){d.o.splice(i,1);d.o.splice(i-1,0,id)}
   else if(a=='dn'&&i<d.o.length-1){d.o.splice(i,1);d.o.splice(i+1,0,id)}
   else if(a=='tg'){var j=d.h.indexOf(id);if(j>=0)d.h.splice(j,1);else d.h.push(id)}
   dsave(d);custOpen();dashRender()});
-$('dash').addEventListener('click',function(e){var ss=e.target.closest('[data-ss]');if(ss){var N=ssNow(),i=+ss.dataset.ss;if(i==1)$('rp').click();else if(i==2){ssSet(N.k,{c:1});ssOpen(N.sk,'p')}else if(i==3)ssOpen(N.sk,'t');else if(i==4)ssOpen(N.sk,'p');else ssSend();return}
+$('dash').addEventListener('click',function(e){var ax=e.target.closest('[data-asx]');if(ax){asDisSet(ssNow().dk,ax.dataset.asx);dashRender();return}
+  if(e.target.closest('[data-asi]')){asIdeas();return}
+  var as=e.target.closest('[data-as]');if(as){var g=as.dataset.as;if(g.indexOf('tab:')==0)tabGo(g.slice(4));else if(g=='shift'){var sc=document.querySelector('[data-c="shift"]');if(sc)sc.scrollIntoView({block:'start'})}else{var gb=$(g);if(gb)gb.click()}return}
+  var ss=e.target.closest('[data-ss]');if(ss){var N=ssNow(),i=+ss.dataset.ss;if(i==1)$('rp').click();else if(i==2){ssSet(N.k,{c:1});ssOpen(N.sk,'p')}else if(i==3)ssOpen(N.sk,'t');else if(i==4)ssOpen(N.sk,'p');else ssSend();return}
   var t=e.target.closest('[data-go],[data-q]');if(!t)return;
   if(t.dataset.go){var id=t.dataset.go;tabGo('roster');setTimeout(function(){var c=document.querySelector('td.n[data-id="'+id+'"]');if(c)c.scrollIntoView({block:'center'})},40);return}
   var q=t.dataset.q;if(q=='cust'){custOpen();return}var b=$(q);if(b)b.click()});
