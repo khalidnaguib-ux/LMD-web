@@ -35,8 +35,12 @@ This repository is the **LMD web** app: a private Arabic/English guard-shift ros
 The test icon is inverted (black background). Files: `apple-touch-icon-test.png`, `icon-512-test.png`. Home-screen name: LMD TEST.
 
 ## Assistant card (v61)
-- Text only. NO voice, no speech, no sound.
+- Text only. NO voice and no speech. Only short tones (sounds) with an on/off switch.
 - A card on the Today screen (`cAsst`, `asList`) that follows `LMD-web-policy.md` section 7: it only warns and suggests, it never changes data.
 - Warnings show 24 hours a day. A warning can be hidden for the day with the cross (kept on the phone, `lmd_asdis`).
 - The "Idea for the app" button saves short notes in `RO.f.ideas` (last 100). The user brings the list to Claude.
 - v62: question box (`asAnswer`: matches the question to the app's own data, English and Arabic, no AI), notes with `remember: ...` stored in `RO.f.mem` (a date like 5/12 in a note shows as a reminder that day), and short sounds (`beep`, switch saved in `lmd_snd`). Sounds are tones only, never a voice. Keep all of this text only and free: no paid API, no data sent out.
+
+## v63
+- **Month end card** (`cMend`): shown from the 25th to the 3rd for the period that ends on the 25th. Five steps: Review Payroll, Make LMD Monthly (both tick when opened, stored in `RO.f.me`), Roll-call archive and Landmark archive (tick when no finished shift is unsigned; only finished shifts are counted, never future days), Backup (ticks when the last backup is after the 25th).
+- Visual polish: coloured dot per card title, icon tiles and round ticks in the step lists, warning rows with a coloured edge, pill buttons, active tab highlight. Look only; no data or rules changed.

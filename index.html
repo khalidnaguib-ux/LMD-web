@@ -3,7 +3,7 @@
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
-<title>LMD web v62</title>
+<title>LMD web v63</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -11,7 +11,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
-/* LMD web v62 - iOS card look (CSS only). Light + Dark follow the system. */
+/* LMD web v63 - iOS card look (CSS only). Light + Dark follow the system. */
 :root{--bg:#f2f2f7;--card:#fff;--tx:#1c1c1e;--mu:#6e6e73;--bd:#e0e0e6;--fr:#f2f2f7;--ac:#007aff;--ac2:rgba(0,122,255,.14);--or:#ff9500;--sh1:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.06);--bl:saturate(180%) blur(18px);color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--card:#1c1c1e;--tx:#f5f5f7;--mu:#98989f;--bd:#38383a;--fr:#2c2c2e;--ac:#0a84ff;--ac2:rgba(10,132,255,.22);--or:#ff9f0a;--sh1:0 0 0 .5px rgba(255,255,255,.06);color-scheme:dark}}
 :root[data-theme="dark"]{--bg:#000;--card:#1c1c1e;--tx:#f5f5f7;--mu:#98989f;--bd:#38383a;--fr:#2c2c2e;--ac:#0a84ff;--ac2:rgba(10,132,255,.22);--or:#ff9f0a;--sh1:0 0 0 .5px rgba(255,255,255,.06);color-scheme:dark}
@@ -139,7 +139,7 @@ td.t.VDS{font-size:11px}
 </head>
 <body>
 <header>
-<div class="top"><button id="pv">‹</button><div><b id="ttl"></b><div style="font-size:11px;color:var(--mu);margin-top:2px">LMD web v62</div></div><button id="nx">›</button></div>
+<div class="top"><button id="pv">‹</button><div><b id="ttl"></b><div style="font-size:11px;color:var(--mu);margin-top:2px">LMD web v63</div></div><button id="nx">›</button></div>
 <div class="pal" id="pal"></div>
 <div class="hint"><span id="st">…</span></div><div id="bkn" class="hint" style="display:none;color:#d2691e"></div>
 </header>
@@ -148,7 +148,7 @@ td.t.VDS{font-size:11px}
 <div class="bar" id="tbar"><button id="un" disabled style="opacity:.4">↶ Undo</button><button id="bk">⬇ Backup</button><button id="pd">Month PDF</button><button id="p2">Overtime PDF</button><button id="mm">📊 LMD Monthly</button><button id="fx">🗂 Create form</button><button id="nm">Names</button><button id="cb">Contacts</button><button id="rc">📒 Roll-call</button><button id="rp">📥 Shift report</button><button id="fu">📊 Follow-up</button><button id="al">🗓 Landmark archive</button><button id="ar">🔒 Archive</button><button id="xl">📗 Excel</button><button id="tr">📋 Track forms</button><button id="py">💰 Payroll</button><button id="hs">📲 Home Screen</button><button id="tbs">✎ Arrange icons</button><button id="tbr">↺ Original order</button><div id="tbh" style="display:none">Tap one icon, then tap another to swap them. Tap “Done” when finished.</div></div>
 <div id="er"></div><div id="sh"></div>
 <nav id="tab"><button data-t="today" class="on"><b>🏠</b>Today</button><button data-t="roster"><b>📅</b>Roster</button><button data-q="py"><b>💰</b>Pay</button><button data-q="fx"><b>🗂</b>Forms</button></nav>
-<div id="lg"><div><b>LMD web v62</b><p>Sign in with Google to open your shift sheets.<br>تسجيل الدخول للوصول إلى البيانات</p><button id="lgb" disabled>Loading…</button><div id="lgm"></div></div></div>
+<div id="lg"><div><b>LMD web v63</b><p>Sign in with Google to open your shift sheets.<br>تسجيل الدخول للوصول إلى البيانات</p><button id="lgb" disabled>Loading…</button><div id="lgm"></div></div></div>
 <script>
 var $=function(i){return document.getElementById(i)};
 var K=[["D","نهاري"],["N","ليلي"],["DS","تطبيق"],["V","إجازة"],["Z","مرضي"],["C","عارضة"],["A","غياب"],["S","طبي"],["SM","راحه تبديل ورديه"],["VDS","راحه بدل تطبيق"]];
@@ -2179,12 +2179,41 @@ window.arDays=window.arOpen;window.arOpen=P.home;window.alOpen=L.home;
 </body>
 </html>
 
+<style>
+/* LMD web v63 - visual polish (look only) */
+.dcard{border-radius:20px;padding:16px 16px 14px;margin:14px 12px 0}
+:root[data-theme="dark"] .dcard{box-shadow:0 0 0 .5px rgba(255,255,255,.08)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dcard{box-shadow:0 0 0 .5px rgba(255,255,255,.08)}}
+.dcard h3{display:flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.8px;margin:0 0 12px}
+.dcard h3::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--dot,var(--ac));flex:none}
+.dcard[data-c=shift]{--dot:#0a84ff}.dcard[data-c=asst]{--dot:#bf5af2}.dcard[data-c=mend]{--dot:#ff375f}.dcard[data-c=today]{--dot:#30d158}.dcard[data-c=attn]{--dot:#ff9f0a}.dcard[data-c=period]{--dot:#64d2ff}.dcard[data-c=pay]{--dot:#5e5ce6}.dcard[data-c=quick],.dcard[data-c=recent]{--dot:#8e8e93}
+.rr.ss{padding:10px 0;gap:12px;justify-content:flex-start}
+.ssi{display:flex;align-items:center;gap:12px;flex:1;min-width:0;font-weight:600;line-height:1.25}
+.ssi i{font-style:normal;width:34px;height:34px;border-radius:10px;background:var(--fr);display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
+.sss{display:block;font-size:12px;color:var(--mu);font-weight:500;margin-top:2px}
+.ssk{width:26px;height:26px;border-radius:50%;border:2px solid var(--bd);flex:none;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;font-weight:800;margin-inline-start:auto}
+.ssk.on{background:#30a46c;border-color:#30a46c}
+.rr.ss:active{opacity:.6}
+.pg{height:7px;border-radius:4px}.pg i{background:linear-gradient(90deg,var(--ac),#5ac8fa)}
+.dc{border-width:1.5px;border-radius:16px;padding:10px 0 8px}.dc b{font-size:26px;font-weight:700}
+.dbig{font-size:36px}
+.di.aw{padding:10px 12px;margin-top:8px;border-radius:12px;background:var(--fr);border-inline-start:3px solid #ff9f0a;font-weight:500;align-items:flex-start;gap:8px}
+.di.aw.im{border-inline-start-color:#ff453a}
+.abtn{display:flex;gap:8px;padding:12px 0 0}
+.abtn button{flex:1;padding:9px 6px;font-size:13px;background:var(--fr);box-shadow:none;border-radius:999px;white-space:nowrap}
+#tab{padding-top:8px}
+#tab button{border-radius:14px;padding:6px 2px 5px}
+#tab button.on{background:var(--ac2)}
+.top b{font-size:22px;letter-spacing:-.4px}
+.dqg button{border-radius:14px}
+.dp{padding:8px 14px}
+</style>
 <script>
-/* LMD web v62 - Today dashboard (additive; reads existing data only) */
+/* LMD web v63 - Today dashboard (additive; reads existing data only) */
 (function(){
-var TAB='today',DQ=['shift','asst','today','attn','period','pay','quick','recent'],
-DN={shift:'Shift start',asst:'Assistant',today:'Today',attn:'Needs attention',period:'Pay period',pay:'Payroll snapshot',quick:'Quick actions',recent:'Last changes'};
-function dq(){var d=(RO.f||{}).dash||{},o=(d.o||[]).filter(function(x){return DQ.indexOf(x)>=0});DQ.forEach(function(x){if(o.indexOf(x)<0){if(x=='shift')o.unshift(x);else if(x=='asst')o.splice(o.indexOf('shift')+1,0,x);else o.push(x)}});return{o:o,h:(d.h||[]).filter(function(x){return DQ.indexOf(x)>=0})}}
+var TAB='today',DQ=['shift','asst','mend','today','attn','period','pay','quick','recent'],
+DN={shift:'Shift start',asst:'Assistant',mend:'Month end',today:'Today',attn:'Needs attention',period:'Pay period',pay:'Payroll snapshot',quick:'Quick actions',recent:'Last changes'};
+function dq(){var d=(RO.f||{}).dash||{},o=(d.o||[]).filter(function(x){return DQ.indexOf(x)>=0});DQ.forEach(function(x){if(o.indexOf(x)<0){if(x=='shift')o.unshift(x);else if(x=='asst')o.splice(o.indexOf('shift')+1,0,x);else if(x=='mend')o.splice(o.indexOf('asst')+1,0,x);else o.push(x)}});return{o:o,h:(d.h||[]).filter(function(x){return DQ.indexOf(x)>=0})}}
 function dsave(d){RO.f=Object.assign({},RO.f,{dash:d});saveRO()}
 function sn(n){return esc(ppNm(n,2))}
 function pill(e){return '<span class="dp" data-go="'+esc(e.id)+'">'+sn(e.n)+'</span>'}
@@ -2235,7 +2264,7 @@ function cShift(){
   var st=[[1,'📥','Shift report from WhatsApp',!!(f.rpt||{})[N.k]],[2,'📒','Check the original paper',!!ss.c],[3,'🕘','التمام اليومي',Object.keys(tm).length>0],[4,'✅','Approve',!!(ap.m&&ap.s)],[5,'📤','Send to upper management',!!ss.s]];
   var dn=st.filter(function(x){return x[3]}).length,d=bizNow();
   var h='<div class="lb dsm" style="margin:-4px 0 6px">'+(N.sh=='D'?'☀️ Day shift':'🌙 Night shift')+' · '+d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' · '+dn+' of 5</div><div class="pg" style="margin-bottom:6px"><i style="width:'+dn*20+'%"></i></div>';
-  st.forEach(function(x){h+='<div class="rr ss" data-ss="'+x[0]+'" style="cursor:pointer"><span>'+x[1]+' '+x[2]+'</span><b style="color:'+(x[3]?'#30a46c':'var(--mu)')+';font-size:20px">'+(x[3]?'✓':'○')+'</b></div>'});
+  st.forEach(function(x){h+='<div class="rr ss" data-ss="'+x[0]+'" style="cursor:pointer"><span class="ssi"><i>'+x[1]+'</i><span>'+x[2]+'</span></span><b class="ssk'+(x[3]?' on':'')+'">'+(x[3]?'✓':'')+'</b></div>'});
   if(dn==5)h+='<div class="dok">✓ This shift is done</div>';
   return card('shift','Shift start',h)}
 function ssOpen(m,f){RCPRE={m:m,f:f};var b=$('rc');if(b)b.click()}
@@ -2299,9 +2328,9 @@ function cAsst(){
   var hr=new Date().getHours(),g=hr>=5&&hr<12?'Good morning':hr<17&&hr>=12?'Good afternoon':'Good evening',L=asList(),N=ssNow(),f=RO.f||{},ss=(f.ss||{})[N.k]||{};
   var h='<div class="lb" style="margin:-2px 0 8px;font-size:13px">'+g+'.</div>';
   if(!L.length){var done=!!(f.rpt||{})[N.k]&&ss.s;h+='<div class="dok">'+(done?'All steps done. Nice work ✓':'✓ Nothing needs you right now.')+'</div>'}
-  else{L.slice(0,4).forEach(function(w){h+='<div class="di" data-as="'+w.go+'" style="cursor:pointer;align-items:flex-start;gap:8px"><span style="flex:1">'+(w.lv=='i'?'<b style="color:#ff453a">Important · </b>':'')+esc(w.t)+'</span><i data-asx="'+w.id+'" style="font-style:normal;color:var(--mu);padding:0 4px" title="Hide for today">✕</i></div>'});
+  else{L.slice(0,4).forEach(function(w){h+='<div class="di aw'+(w.lv=='i'?' im':'')+'" data-as="'+w.go+'" style="cursor:pointer"><span style="flex:1">'+(w.lv=='i'?'<b style="color:#ff453a">Important · </b>':'')+esc(w.t)+'</span><i data-asx="'+w.id+'" style="font-style:normal;color:var(--mu);padding:0 4px" title="Hide for today">✕</i></div>'});
     if(L.length>4)h+='<div class="lb dsm">+'+(L.length-4)+' more</div>'}
-  h+='<div class="bar" style="padding:10px 0 0"><button data-ask="1">💬 Ask</button><button data-asi="1">💡 Idea</button><button data-asn="1">'+(sndOn()?'🔊 On':'🔇 Off')+'</button></div>';
+  h+='<div class="bar abtn"><button data-ask="1">💬 Ask</button><button data-asi="1">💡 Idea</button><button data-asn="1">'+(sndOn()?'🔊 On':'🔇 Off')+'</button></div>';
   return card('asst','Assistant',h)}
 function asIdeas(){
   var I=(RO.f||{}).ideas||[],h='<b>Idea for the app</b><div class="lb" style="font-size:12px;margin:4px 0 6px">Write it in your own words. It is saved, and you can bring the list to Claude.</div><textarea id="asit" rows="3" dir="auto" placeholder="e.g. I always tap X then Y, make it one tap" style="width:100%;font:inherit;padding:10px;border-radius:12px;border:1px solid var(--bd);background:var(--card);color:inherit"></textarea><div class="bar"><button data-asv="1">Save idea</button><button data-a="x">Close</button></div>';
@@ -2375,13 +2404,35 @@ function askOpen(){
   sheet(h+'<div class="bar"><button data-a="x">Close</button></div>')}
 function askDo(q){q=(q||'').trim();if(!q)return;var a;try{a=asAnswer(q)}catch(e){a='Could not answer that.'}ASH.unshift({q:q,a:a});if(ASH.length>12)ASH.pop();askOpen();var i=$('asq');if(i){i.value='';try{i.focus()}catch(e){}}}
 $('sh').addEventListener('keydown',function(e){if(e.key=='Enter'&&e.target&&e.target.id=='asq'){e.preventDefault();askDo(e.target.value)}});
+/* ===== Month end card: from the 25th to the 3rd. Ticks from the app's own data; step 1-2 tick when you open them. ===== */
+function meCtx(){
+  var b=bizNow(),dd=b.getDate();if(!(dd>=25||dd<=3))return null;
+  var y=b.getFullYear(),mo=b.getMonth(),end=dd>=25?new Date(y,mo,25):new Date(y,mo-1,25),ym=end.getFullYear()+'-'+pad(end.getMonth()+1),st=new Date(end.getFullYear(),end.getMonth()-1,26);
+  var lm=dd>=25?new Date(y,mo,1):new Date(y,mo-1,1);
+  return{ym:ym,end:end,st:st,lm:lm,b:b,TK:key(b),h:new Date().getHours()}}
+function meFin(C,dk,s){if(dk<C.TK)return true;if(dk==C.TK)return s=='d'&&(C.h>=21||C.h<9);return false}
+function meMiss(C,a,z,need){var f=RO.f||{},ap=f.ap||{},o=[],d=new Date(a);while(d<=z){var k=key(d);['d','n'].forEach(function(s){if(!meFin(C,k,s))return;var g=ap[k+'_'+s]||{};if(!(need=='m'?g.m:(g.m&&g.s)))o.push(d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+(s=='d'?'D':'N'))});d=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1)}return o}
+function meSet(ym,k){var f=Object.assign({},RO.f),me=Object.assign({},f.me);me[ym]=Object.assign({},me[ym]);me[ym][k]=1;var ks=Object.keys(me).sort();while(ks.length>6)delete me[ks.shift()];f.me=me;RO.f=f;saveRO()}
+function cMend(){
+  var C=meCtx();if(!C)return'';
+  var f=RO.f||{},fl=(f.me||{})[C.ym]||{},zr=C.end<new Date(C.b.getFullYear(),C.b.getMonth(),C.b.getDate())?C.end:new Date(C.b.getFullYear(),C.b.getMonth(),C.b.getDate());
+  var rc=meMiss(C,C.st,C.end,'ms'),lend=new Date(C.lm.getFullYear(),C.lm.getMonth()+1,0),la=meMiss(C,C.lm,lend<new Date(C.b.getFullYear(),C.b.getMonth(),C.b.getDate())?lend:new Date(C.b.getFullYear(),C.b.getMonth(),C.b.getDate()),'m');
+  var t=f.lastBk,bk=!!t&&new Date(t)>=C.end;
+  var out=0,pn=0;try{emps().forEach(function(e){if(pyAbs(e.id).out)out++});pyRows().forEach(function(r){pn+=(r.dd||0)+(r.pdd||0)})}catch(x){}
+  function sub(a){return a.length?a.slice(0,3).join(' · ')+(a.length>3?' · +'+(a.length-3):''):''}
+  var st=[[1,'💰','Review Payroll',!!fl.py,(out?out+' OUT':'')+(out&&pn?' · ':'')+(pn?'deductions in this period':'')],[2,'📊','Make LMD Monthly',!!fl.mm,''],[3,'📒','Roll-call archive',!rc.length,rc.length?rc.length+' not signed · '+sub(rc):'All signed'],[4,'🗓','Landmark archive',!la.length,la.length?la.length+' not signed · '+sub(la):'All signed'],[5,'⬇️','Backup',bk,bk?'Saved after the period ended':'Save a backup after the 25th']];
+  var dn=st.filter(function(x){return x[3]}).length;
+  var h='<div class="lb dsm" style="margin:-4px 0 6px">'+C.st.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' → '+C.end.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' · '+dn+' of 5</div><div class="pg" style="margin-bottom:6px"><i style="width:'+dn*20+'%"></i></div>';
+  st.forEach(function(x){h+='<div class="rr ss" data-mq="'+x[0]+'" style="cursor:pointer"><span class="ssi"><i>'+x[1]+'</i><span>'+x[2]+(x[4]?'<span class="sss">'+esc(x[4])+'</span>':'')+'</span></span><b class="ssk'+(x[3]?' on':'')+'">'+(x[3]?'✓':'')+'</b></div>'});
+  if(dn==5)h+='<div class="dok">✓ Month end is done</div>';
+  return card('mend','Month end',h)}
 function cRecent(){
   var h='',L=hist.slice(-4).reverse();
   if(!L.length)return card('recent','Last changes','<div class="lb">No changes yet in this session.</div>');
   L.forEach(function(pv){var ks=Object.keys(pv);if(!ks.length)return;var k=ks[0],id=k.slice(0,-11),dt=k.slice(-10),i=pinfo(id),nv=cells[k]||'—',ov=pv[k]||'—';
     h+='<div class="rr"><span>'+(i?sn(i[0][0]):esc(id))+' <span class="lb">· '+fd(dt).slice(0,5)+'</span></span><span><b>'+kd(ov)+' → '+kd(nv)+'</b>'+(ks.length>1?' <span class="lb">+'+(ks.length-1)+'</span>':'')+'</span></div>'});
   return card('recent','Last changes',h+'<div class="bar" style="padding:10px 0 0"><button data-q="un">↶ Undo last</button></div>')}
-var F={asst:cAsst,shift:cShift,today:cToday,attn:cAttn,period:cPeriod,pay:cPay,quick:cQuick,recent:cRecent};
+var F={mend:cMend,asst:cAsst,shift:cShift,today:cToday,attn:cAttn,period:cPeriod,pay:cPay,quick:cQuick,recent:cRecent};
 window.dashRender=function(){
   var el=$('dash');if(!el||TAB!='today')return;
   if(!ready){el.innerHTML='<div class="dcard"><div class="lb">Loading…</div></div>';return}
@@ -2398,7 +2449,8 @@ $('sh').addEventListener('click',function(e){var aq=e.target.closest('[data-asq]
   else if(a=='dn'&&i<d.o.length-1){d.o.splice(i,1);d.o.splice(i+1,0,id)}
   else if(a=='tg'){var j=d.h.indexOf(id);if(j>=0)d.h.splice(j,1);else d.h.push(id)}
   dsave(d);custOpen();dashRender()});
-$('dash').addEventListener('click',function(e){var ax=e.target.closest('[data-asx]');if(ax){asDisSet(ssNow().dk,ax.dataset.asx);dashRender();return}
+$('dash').addEventListener('click',function(e){var mq=e.target.closest('[data-mq]');if(mq){var MC=meCtx(),i2=+mq.dataset.mq;if(MC){if(i2==1){meSet(MC.ym,'py');$('py').click()}else if(i2==2){meSet(MC.ym,'mm');$('mm').click()}else if(i2==3)$('ar').click();else if(i2==4)$('al').click();else $('bk').click()}return}
+  var ax=e.target.closest('[data-asx]');if(ax){asDisSet(ssNow().dk,ax.dataset.asx);dashRender();return}
   if(e.target.closest('[data-asi]')){asIdeas();return}
   if(e.target.closest('[data-ask]')){askOpen();return}
   if(e.target.closest('[data-asn]')){sndSet(!sndOn());if(sndOn())beep('ok');dashRender();return}
