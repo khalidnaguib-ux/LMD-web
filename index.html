@@ -3,7 +3,7 @@
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
-<title>LMD web v61</title>
+<title>LMD web v62</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -11,7 +11,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
-/* LMD web v61 - iOS card look (CSS only). Light + Dark follow the system. */
+/* LMD web v62 - iOS card look (CSS only). Light + Dark follow the system. */
 :root{--bg:#f2f2f7;--card:#fff;--tx:#1c1c1e;--mu:#6e6e73;--bd:#e0e0e6;--fr:#f2f2f7;--ac:#007aff;--ac2:rgba(0,122,255,.14);--or:#ff9500;--sh1:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.06);--bl:saturate(180%) blur(18px);color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--card:#1c1c1e;--tx:#f5f5f7;--mu:#98989f;--bd:#38383a;--fr:#2c2c2e;--ac:#0a84ff;--ac2:rgba(10,132,255,.22);--or:#ff9f0a;--sh1:0 0 0 .5px rgba(255,255,255,.06);color-scheme:dark}}
 :root[data-theme="dark"]{--bg:#000;--card:#1c1c1e;--tx:#f5f5f7;--mu:#98989f;--bd:#38383a;--fr:#2c2c2e;--ac:#0a84ff;--ac2:rgba(10,132,255,.22);--or:#ff9f0a;--sh1:0 0 0 .5px rgba(255,255,255,.06);color-scheme:dark}
@@ -139,7 +139,7 @@ td.t.VDS{font-size:11px}
 </head>
 <body>
 <header>
-<div class="top"><button id="pv">‹</button><div><b id="ttl"></b><div style="font-size:11px;color:var(--mu);margin-top:2px">LMD web v61</div></div><button id="nx">›</button></div>
+<div class="top"><button id="pv">‹</button><div><b id="ttl"></b><div style="font-size:11px;color:var(--mu);margin-top:2px">LMD web v62</div></div><button id="nx">›</button></div>
 <div class="pal" id="pal"></div>
 <div class="hint"><span id="st">…</span></div><div id="bkn" class="hint" style="display:none;color:#d2691e"></div>
 </header>
@@ -148,7 +148,7 @@ td.t.VDS{font-size:11px}
 <div class="bar" id="tbar"><button id="un" disabled style="opacity:.4">↶ Undo</button><button id="bk">⬇ Backup</button><button id="pd">Month PDF</button><button id="p2">Overtime PDF</button><button id="mm">📊 LMD Monthly</button><button id="fx">🗂 Create form</button><button id="nm">Names</button><button id="cb">Contacts</button><button id="rc">📒 Roll-call</button><button id="rp">📥 Shift report</button><button id="fu">📊 Follow-up</button><button id="al">🗓 Landmark archive</button><button id="ar">🔒 Archive</button><button id="xl">📗 Excel</button><button id="tr">📋 Track forms</button><button id="py">💰 Payroll</button><button id="hs">📲 Home Screen</button><button id="tbs">✎ Arrange icons</button><button id="tbr">↺ Original order</button><div id="tbh" style="display:none">Tap one icon, then tap another to swap them. Tap “Done” when finished.</div></div>
 <div id="er"></div><div id="sh"></div>
 <nav id="tab"><button data-t="today" class="on"><b>🏠</b>Today</button><button data-t="roster"><b>📅</b>Roster</button><button data-q="py"><b>💰</b>Pay</button><button data-q="fx"><b>🗂</b>Forms</button></nav>
-<div id="lg"><div><b>LMD web v61</b><p>Sign in with Google to open your shift sheets.<br>تسجيل الدخول للوصول إلى البيانات</p><button id="lgb" disabled>Loading…</button><div id="lgm"></div></div></div>
+<div id="lg"><div><b>LMD web v62</b><p>Sign in with Google to open your shift sheets.<br>تسجيل الدخول للوصول إلى البيانات</p><button id="lgb" disabled>Loading…</button><div id="lgm"></div></div></div>
 <script>
 var $=function(i){return document.getElementById(i)};
 var K=[["D","نهاري"],["N","ليلي"],["DS","تطبيق"],["V","إجازة"],["Z","مرضي"],["C","عارضة"],["A","غياب"],["S","طبي"],["SM","راحه تبديل ورديه"],["VDS","راحه بدل تطبيق"]];
@@ -2180,7 +2180,7 @@ window.arDays=window.arOpen;window.arOpen=P.home;window.alOpen=L.home;
 </html>
 
 <script>
-/* LMD web v61 - Today dashboard (additive; reads existing data only) */
+/* LMD web v62 - Today dashboard (additive; reads existing data only) */
 (function(){
 var TAB='today',DQ=['shift','asst','today','attn','period','pay','quick','recent'],
 DN={shift:'Shift start',asst:'Assistant',today:'Today',attn:'Needs attention',period:'Pay period',pay:'Payroll snapshot',quick:'Quick actions',recent:'Last changes'};
@@ -2250,9 +2250,9 @@ function ssPrep(){
       doc.addImage(pg.cv.toDataURL('image/jpeg',0.92),'JPEG',(210-w)/2,0,w,h);SSB.pdf=new File([doc.output('blob')],'roll-call-'+N.k+'.pdf',{type:'application/pdf'});var y=$('ssp');if(y){y.disabled=false;y.textContent='📄 Share as PDF'}}
   })}
 window.ssShare=function(w){var N=ssNow(),f=SSB[w];if(!f){err('Still preparing…','#8a8a82',1500);return}
-  if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).then(function(){ssSet(N.k,{s:1});err('Sent ✓','#2f9e5b',2000);dashRender()},function(){})}
+  if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).then(function(){ssSet(N.k,{s:1});beep('sent');err('Sent ✓','#2f9e5b',2000);dashRender()},function(){})}
   else err('Sharing is not available here - use Roll-call > Save image','#d2691e',4500)};
-window.ssMark=function(){var N=ssNow(),ss=((RO.f||{}).ss||{})[N.k]||{};ssSet(N.k,{s:ss.s?0:1});$('sh').style.display='none';dashRender()};
+window.ssMark=function(){var N=ssNow(),ss=((RO.f||{}).ss||{})[N.k]||{};ssSet(N.k,{s:ss.s?0:1});if(!ss.s)beep('sent');$('sh').style.display='none';dashRender()};
 function ssSend(){
   var N=ssNow();
   sheet('<b>Send to upper management</b><div class="lb" style="margin:6px 0">'+(N.sh=='D'?'Day':'Night')+' shift · '+N.dk+' · original paper</div><div class="bar"><button id="ssi" disabled onclick="ssShare(\'img\')">Preparing…</button></div><div class="bar"><button id="ssp" disabled onclick="ssShare(\'pdf\')">Preparing…</button></div><div class="bar"><button onclick="ssMark()">Mark as sent / not sent</button><button data-a="x">Close</button></div><div class="lb" style="font-size:12px">Pick WhatsApp in the share sheet, then choose the chat.</div>');
@@ -2262,8 +2262,8 @@ function asEl(){var n=new Date(),h=n.getHours(),N=ssNow();return N.sh=='D'?h-9:(
 function asPrev(){var N=ssNow(),b=bizNow();if(N.sh=='N'){return{sh:'D',sk:'d',dk:N.dk}}var p=new Date(b.getFullYear(),b.getMonth(),b.getDate()-1);return{sh:'N',sk:'n',dk:key(p)}}
 function asDis(){try{var o=JSON.parse(localStorage.getItem('lmd_asdis')||'{}');return o}catch(e){return{}}}
 function asDisSet(dk,id){try{var o={};o[dk]=(asDis()[dk]||[]).concat([id]);localStorage.setItem('lmd_asdis',JSON.stringify(o))}catch(e){}}
-function asList(){
-  var W=[],N=ssNow(),f=RO.f||{},el=asEl(),hr=new Date().getHours(),quiet=hr<7,E=emps(),D=days(),TK=N.dk;
+function asList(all){
+  var W=[],N=ssNow(),f=RO.f||{},el=asEl(),hr=new Date().getHours(),quiet=false,E=emps(),D=days(),TK=N.dk;
   function add(id,lv,t,go){W.push({id:id,lv:lv,t:t,go:go||''})}
   /* 1 shift report not applied */
   if(el>=1&&!(f.rpt||{})[N.k])add('rp','n','The '+(N.sh=='D'?'day':'night')+' shift started '+el+' hour'+(el>1?'s':'')+' ago and its report is not applied yet.','rp');
@@ -2292,7 +2292,8 @@ function asList(){
     add('pw','n','Payroll week: '+(out?out+' OUT, ':'')+(pn?'deductions in this period. ':'')+'review Payroll before the period ends.','py')}
   var last=D[D.length-1],left=Math.round((new Date(last.getFullYear(),last.getMonth(),last.getDate())-new Date(b.getFullYear(),b.getMonth(),b.getDate()))/864e5);
   if(left>=0&&left<=1)add('me','n','The period ends '+(left?'tomorrow':'today')+'. Make LMD Monthly and the archive.','mm');
-  var dis=asDis()[TK]||[];
+  (f.mem||[]).forEach(function(x,i){var m=String(x.t||'').match(/(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?/);if(m&&+m[1]==b.getDate()&&+m[2]==b.getMonth()+1&&(!m[3]||(+m[3])%100==b.getFullYear()%100))add('m'+i,'n','Reminder: '+x.t,'ask')});
+  var dis=all?[]:(asDis()[TK]||[]);
   return W.filter(function(w){return dis.indexOf(w.id)<0&&(!quiet||w.lv=='i')}).sort(function(a,b2){return(a.lv=='i'?0:1)-(b2.lv=='i'?0:1)})}
 function cAsst(){
   var hr=new Date().getHours(),g=hr>=5&&hr<12?'Good morning':hr<17&&hr>=12?'Good afternoon':'Good evening',L=asList(),N=ssNow(),f=RO.f||{},ss=(f.ss||{})[N.k]||{};
@@ -2300,13 +2301,80 @@ function cAsst(){
   if(!L.length){var done=!!(f.rpt||{})[N.k]&&ss.s;h+='<div class="dok">'+(done?'All steps done. Nice work ✓':'✓ Nothing needs you right now.')+'</div>'}
   else{L.slice(0,4).forEach(function(w){h+='<div class="di" data-as="'+w.go+'" style="cursor:pointer;align-items:flex-start;gap:8px"><span style="flex:1">'+(w.lv=='i'?'<b style="color:#ff453a">Important · </b>':'')+esc(w.t)+'</span><i data-asx="'+w.id+'" style="font-style:normal;color:var(--mu);padding:0 4px" title="Hide for today">✕</i></div>'});
     if(L.length>4)h+='<div class="lb dsm">+'+(L.length-4)+' more</div>'}
-  h+='<div class="bar" style="padding:10px 0 0"><button data-asi="1">💡 Idea for the app</button></div>';
+  h+='<div class="bar" style="padding:10px 0 0"><button data-ask="1">💬 Ask</button><button data-asi="1">💡 Idea</button><button data-asn="1">'+(sndOn()?'🔊 On':'🔇 Off')+'</button></div>';
   return card('asst','Assistant',h)}
 function asIdeas(){
   var I=(RO.f||{}).ideas||[],h='<b>Idea for the app</b><div class="lb" style="font-size:12px;margin:4px 0 6px">Write it in your own words. It is saved, and you can bring the list to Claude.</div><textarea id="asit" rows="3" dir="auto" placeholder="e.g. I always tap X then Y, make it one tap" style="width:100%;font:inherit;padding:10px;border-radius:12px;border:1px solid var(--bd);background:var(--card);color:inherit"></textarea><div class="bar"><button data-asv="1">Save idea</button><button data-a="x">Close</button></div>';
   if(I.length){h+='<div class="lb" style="margin-top:8px">Saved ideas · '+I.length+'</div>';I.slice().reverse().slice(0,15).forEach(function(x,i){h+='<div class="rr"><span style="flex:1">'+esc(x.t)+'<span class="lb"> · '+new Date(x.at).toLocaleDateString('en-GB',{day:'numeric',month:'short'})+'</span></span><button data-asd="'+(I.length-1-i)+'">✕</button></div>'})}
   sheet(h)}
 function asIdeasSave(){var t=($('asit')||{}).value;t=(t||'').trim();if(!t){err('Write the idea first','#8a8a82',1800);return}var f=Object.assign({},RO.f),I=(f.ideas||[]).slice();I.push({t:t.slice(0,500),at:Date.now()});f.ideas=I.slice(-100);RO.f=f;saveRO();err('Idea saved ✓','#2f9e5b',1800);asIdeas()}
+/* ---- sounds (short tones, no voice) ---- */
+var SND={ctx:null};
+function sndOn(){try{return localStorage.getItem('lmd_snd')!=='0'}catch(e){return true}}
+function sndSet(v){try{localStorage.setItem('lmd_snd',v?'1':'0')}catch(e){}}
+var SQ={D:[[784,.09,'sine',.15,0]],N:[[392,.14,'sine',.18,0]],DS:[[784,.07,'sine',.14,0],[392,.1,'sine',.16,.09]],V:[[523,.08,'triangle',.13,0],[659,.1,'triangle',.13,.09]],A:[[160,.2,'square',.07,0]],C:[[587,.1,'triangle',.13,0]],Z:[[466,.1,'triangle',.13,0]],S:[[440,.14,'sine',.15,0]],SM:[[415,.1,'sine',.15,0],[415,.1,'sine',.12,.14]],R:[[300,.25,'sawtooth',.06,0,150]],VDS:[[523,.07,'triangle',.13,0],[784,.08,'triangle',.13,.08]],clear:[[250,.04,'sine',.09,0]],sent:[[523,.1,'sine',.15,0],[659,.1,'sine',.15,.11],[784,.2,'sine',.16,.22]],approve:[[659,.09,'sine',.15,0],[880,.16,'sine',.16,.1]],applied:[[587,.08,'sine',.14,0],[740,.08,'sine',.14,.09],[880,.14,'sine',.15,.18]],ok:[[660,.06,'sine',.12,0]]};
+function beep(name){var seq=SQ[name];if(!seq||!sndOn())return;try{var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!SND.ctx)SND.ctx=new AC();var c=SND.ctx;if(c.state=='suspended')c.resume();var t0=c.currentTime;seq.forEach(function(n){var o=c.createOscillator(),g=c.createGain(),t=t0+n[4];o.type=n[2];o.frequency.setValueAtTime(n[0],t);if(n[5])o.frequency.exponentialRampToValueAtTime(n[5],t+n[1]);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(n[3],t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+n[1]);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+n[1]+.03)})}catch(e){}}
+var _wr=write;write=function(o,nh){var r=_wr.apply(this,arguments);try{var ks=Object.keys(o||{});if(ks.length==1)beep(o[ks[0]]&&SQ[o[ks[0]]]?o[ks[0]]:'clear');else if(ks.length>1&&!nh)beep('applied')}catch(e){}return r};
+var _ap=ppSetAp;ppSetAp=function(s,w,on){var r=_ap.apply(this,arguments);if(on)beep('approve');return r};
+/* ---- question box and notes (no AI: matches the question to the app's own data) ---- */
+function aN(x){return String(x||'').toLowerCase().replace(/[٠-٩]/g,function(c){return c.charCodeAt(0)-1632}).replace(/[ً-ٰٟـ]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/[؟?!.,،:;()]/g,' ').replace(/\s+/g,' ').trim()}
+var A_STOP={};('who is on the a an of in for me show list what are how many much did has have was were at and to all this that period month today yesterday tomorrow shift shifts day night double ds guard guards people person employees payroll salary salaries net absent absence absences leave vacation form forms pending not marked status out total count notes unmarked sick casual with from by on it'+' مين ايه كام في علي من هو هي اليوم امس بكره بكرا الوردي وردي ورديه نهاري ليلي غياب غايب غائب اجازه اجازات مرتب مرتبات رواتب نموذج نماذج عدد كل الفتره الشهر حاله مش غير مسجل دبل مريض عارضه هل ده دي').split(' ').forEach(function(w){if(w)A_STOP[w]=1});
+function aPeople(q,E){var toks=q.split(' ').filter(function(w){return w.length>=2&&!A_STOP[w]&&!/^\d+([\/\-]\d+)*$/.test(w)&&!/^\d+(st|nd|rd|th)$/.test(w)});if(!toks.length)return[];var best=0,out=[];E.forEach(function(e){var nt=aN(e.n).split(' '),sc=0;toks.forEach(function(w){if(nt.some(function(x){return x==w||(w.length>=3&&x.indexOf(w)==0)}))sc++});if(sc>best){best=sc;out=[e]}else if(sc&&sc==best)out.push(e)});return best?out:[]}
+function aDate(q){var b=bizNow(),D=days().map(key),k=key(b),m;
+  if(/yesterday|امس|البارح/.test(q))k=key(new Date(b.getFullYear(),b.getMonth(),b.getDate()-1));
+  else if(/tomorrow|بكره|بكرا|غدا/.test(q))k=key(new Date(b.getFullYear(),b.getMonth(),b.getDate()+1));
+  else if((m=q.match(/(\d{1,2})[\/\-](\d{1,2})/))){var f=D.filter(function(x){var p=x.split('-');return +p[2]==+m[1]&&+p[1]==+m[2]});k=f[0]||'x'}
+  else if((m=q.match(/(\d{1,2})(?:st|nd|rd|th)\b/))||(m=q.match(/يوم (\d{1,2})\b/))){var f2=D.filter(function(x){return +x.split('-')[2]==+m[1]});k=f2[0]||'x'}
+  return k}
+function aNames(a,n){n=n||30;if(!a.length)return'—';return a.slice(0,n).map(function(e){return'<span data-ago="'+esc(e.id)+'" style="color:var(--ac);cursor:pointer">'+esc(ppNm(e.n,2))+'</span>'}).join(' · ')+(a.length>n?' · +'+(a.length-n):'')}
+function aDay(k){var L={D:[],N:[],un:[],c:{}};emps().forEach(function(e){if(jBef(e.id,k))return;var c=get(e.id,k);if(!c){L.un.push(e);return}(L.c[c]=L.c[c]||[]).push(e);if(e.g<2)return;if(c=='D'||c=='DS')L.D.push(e);if(c=='N'||c=='DS')L.N.push(e)});return L}
+function aRow(id){try{return pyRows().filter(function(r){return r.id==id})[0]}catch(e){return null}}
+function aDs(k){return new Date(k+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}
+var A_HELP=['Who is not marked?','Night shift today','Day shift yesterday','Absences this period','Who is OUT?','Payroll total','Forms not returned','What is pending?','Notes','مين غايب النهارده؟','مرتب أحمد'];
+function asAnswer(raw){
+  var q0=String(raw||'').trim(),ar=/[؀-ۿ]/.test(q0)&&!/[a-z]{3,}/i.test(q0),q=aN(q0),f=RO.f||{},m;
+  function T(e,a){return ar?a:e}
+  if((m=q0.match(/^\s*(remember|note|تذكر|اتذكر|سجل)(?:\s*[:：\-]\s*|\s+)([\s\S]+)$/i))&&m[2].trim()){var f1=Object.assign({},RO.f),M=(f1.mem||[]).slice();M.push({t:m[2].trim().slice(0,300),at:Date.now()});f1.mem=M.slice(-200);RO.f=f1;saveRO();dashRender();beep('ok');return T('Saved ✓ (note '+M.length+'). It will show when you ask about that person, and as a reminder if it has a date like 5/12.','تم الحفظ ✓ (ملاحظة '+M.length+'). هتظهر لما تسأل عن الشخص ده، وكتذكير لو فيها تاريخ زي 5/12.')}
+  if((m=q.match(/^(forget|delete|انسي|امسح)\s*(?:note|ملاحظه)?\s*(\d+)$/))){var f2=Object.assign({},RO.f),M2=(f2.mem||[]).slice(),ix=+m[2]-1;if(ix<0||ix>=M2.length)return T('There is no note '+m[2]+'.','مفيش ملاحظة '+m[2]+'.');M2.splice(ix,1);f2.mem=M2;RO.f=f2;saveRO();dashRender();return T('Note deleted.','تم مسح الملاحظة.')}
+  if(/^(notes|my notes|show notes|remember|ملاحظات|نوتس|تذكر)$/.test(q)){var M3=f.mem||[];return M3.length?M3.map(function(x,i){return(i+1)+'. '+esc(x.t)}).join('<br>')+'<br><span class="lb">'+T('To delete: forget 2','للمسح: امسح 2')+'</span>':T('No notes yet. Type: remember: Ahmed is on approved leave until 5/12','مفيش ملاحظات. اكتب: تذكر: أحمد في إجازة معتمدة لحد 5/12')}
+  if(/^(help|مساعده|اوامر|\?)$/.test(q)||!q)return T('Ask about shifts, absences, leave, payroll, forms, a person, or what is pending. Or type: remember: …','اسأل عن الورديات أو الغياب أو الإجازات أو المرتبات أو النماذج أو شخص أو المتبقي. أو اكتب: تذكر: …');
+  if(/pending|left to do|to do|todo|what is open|متبقي|ناقص|المطلوب|مطلوب/.test(q)){var W=asList(true);return W.length?W.map(function(w){return'• '+esc(w.t)}).join('<br>'):T('Nothing is pending right now ✓','مفيش حاجة معلقة دلوقتي ✓')}
+  var k=aDate(q),D=days().map(key);
+  if(D.indexOf(k)<0)return T('That date is not in the period shown. Use ‹ › to switch the period.','التاريخ ده مش في الفترة المعروضة. غيّر الفترة بالأسهم.');
+  var TK=key(bizNow()),E=emps(),P=aPeople(q,E),dl=aDs(k),dw=/yesterday|today|tomorrow|امس|اليوم|بكره|بكرا|\d/.test(q);
+  var wantPay=/payroll|salary|salaries|net pay|مرتب|مرتبات|رواتب|راتب|مكافا/.test(q),wantForm=/form|forms|نموذج|نماذج|استمار/.test(q),wantAbs=/absent|absence|absences|غياب|غايب|غائب/.test(q),wantLv=/leave|vacation|اجاز|راحه/.test(q),wantOut=/\bout\b|خارج|مفصول|ترك العمل/.test(q),wantUn=/not marked|no status|unmarked|not entered|missing|لم يسجل|مش مسجل|غير مسجل|ماسجل|مش متسجل/.test(q),wantDS=/double|\bds\b|دبل/.test(q),wantN=/night|ليل/.test(q),wantD=/\bday\b|day shift|نهار|صباح/.test(q),wantCnt=/how many|count|summary|total shifts|كام|عدد/.test(q);
+  var h=[],L;
+  if(wantForm){var fo=(RO.fm||[]).filter(function(e){return e.tr!='returned'&&pinfo(e.i)});return fo.length?fo.map(function(e){var i=pinfo(e.i);return'• '+esc(fmName(e.t))+' · '+esc(ppNm(i[0][0],2))+' · '+fmDMY(e.d,'/')+(e.tr=='sent'?' ('+T('sent','اتبعت')+')':'')}).join('<br>'):T('All forms are returned ✓','كل النماذج رجعت ✓')}
+  if(wantPay){var R;try{R=pyRows()}catch(x){return T('Open Payroll first to load the figures.','افتح المرتبات الأول.')}
+    if(P.length&&P.length<=3)return P.map(function(e){var r=R.filter(function(z){return z.id==e.id})[0];return r?'<b>'+esc(ppNm(e.n,2))+'</b><br>'+T('Net ','الصافي ')+fmt(r.net)+' · '+T('unit ','اليومية ')+fmt(r.unit)+'<br>'+T('Overtime ','إضافي ')+fmt(r.ot)+' · '+T('deductions ','خصومات ')+fmt(r.dd+r.pdd)+' · '+T('compensation ','مكافأة ')+fmt(r.ended?r.cp:r.cp0)+'<br>'+T('Total ','الإجمالي ')+'<b>'+fmt(r.tot)+'</b>'+(r.ended?'':' <span class="lb">('+T('so far','حتى الآن')+')</span>')+(r.out?' · OUT':''):esc(ppNm(e.n,2))+': —'}).join('<br><br>');
+    var tt=0,to=0,td=0,tc=0;R.forEach(function(r){tt+=r.tot;to+=r.ot;td+=r.dd+r.pdd;tc+=r.ended?r.cp:r.cp0});return T('Total ','الإجمالي ')+'<b>'+fmt(tt)+'</b><br>'+T('Overtime ','إضافي ')+fmt(to)+' · '+T('deductions ','خصومات ')+fmt(td)+' · '+T('compensation ','مكافأة ')+fmt(tc)}
+  if(P.length&&P.length>3&&!wantUn)return T('Which one? ','تقصد مين؟ ')+aNames(P,8);
+  if(P.length&&(wantAbs||wantLv||wantOut||!(wantUn||wantDS||wantN||wantD||wantCnt))){
+    return P.map(function(e){var cnt={},run=0,mx=0;D.forEach(function(x){if(x>TK||jBef(e.id,x))return;var c=get(e.id,x);if(c)cnt[c]=(cnt[c]||0)+1;if(c=='A'){run++;if(run>mx)mx=run}else run=0});
+      var r=aRow(e.id),j=jDay(e.id),st=get(e.id,k),mem=(f.mem||[]).filter(function(x){var nt=aN(x.t);return aN(e.n).split(' ').some(function(w){return w.length>=3&&nt.indexOf(w)>=0})});
+      var cs=Object.keys(cnt).map(function(c){return kd(c)+' '+cnt[c]}).join(' · ');
+      return'<b>'+esc(ppNm(e.n,3))+'</b> · '+(st?kd(st):T('not marked','مش مسجل'))+' '+T('on ','يوم ')+dl+'<br>'+(cs||'—')+(mx>=2?'<br>'+T('Longest A run: ','أطول غياب متتالي: ')+mx:'')+(r&&r.out?'<br><b>OUT</b>':'')+(j?'<br>'+T('Joined: ','التحاق: ')+fd(j):'')+(r&&r.ent!=null?'<br>'+T('Leave: ','الإجازة: ')+T('entitled ','مستحق ')+r.ent+' · '+T('taken ','مأخوذ ')+r.tk+' · '+T('left ','متبقي ')+r.rem0:'')+mem.map(function(x){return'<br>📝 '+esc(x.t)}).join('')}).join('<br><br>')}
+  if(wantAbs&&!dw||(wantAbs&&/period|month|فتره|شهر/.test(q))){var rows=[];E.forEach(function(e){var n=0,run=0,mx=0;D.forEach(function(x){if(x>TK||jBef(e.id,x))return;if(get(e.id,x)=='A'){n++;run++;if(run>mx)mx=run}else run=0});if(n)rows.push([e,n,mx])});rows.sort(function(a,b){return b[1]-a[1]});return rows.length?rows.map(function(r){return'<span data-ago="'+esc(r[0].id)+'" style="color:var(--ac);cursor:pointer">'+esc(ppNm(r[0].n,2))+'</span> · A '+r[1]+(r[2]>1?' ('+T('max in a row ','أقصى متتالي ')+r[2]+')':'')}).join('<br>'):T('No absences in this period ✓','مفيش غياب في الفترة دي ✓')}
+  L=aDay(k);
+  if(wantOut){var o=[];E.forEach(function(e){try{if(pyAbs(e.id).out)o.push(e)}catch(x){}});return o.length?'OUT · '+o.length+'<br>'+aNames(o):T('Nobody is OUT ✓','محدش OUT ✓')}
+  if(wantAbs)return'A · '+dl+' · '+(L.c.A||[]).length+'<br>'+aNames(L.c.A||[]);
+  if(wantLv)return T('Leave (V) on ','إجازة (V) يوم ')+dl+' · '+((L.c.V||[]).length+(L.c.VDS||[]).length)+'<br>'+aNames((L.c.V||[]).concat(L.c.VDS||[]));
+  if(wantUn)return T('Not marked on ','مش مسجلين يوم ')+dl+' · '+L.un.length+'<br>'+aNames(L.un);
+  if(wantDS)return'DS · '+dl+' · '+(L.c.DS||[]).length+'<br>'+aNames(L.c.DS||[]);
+  if(/sick|مريض|مرض/.test(q)){var sk=(L.c.S||[]).concat(L.c.SM||[]);return'S / SM · '+dl+' · '+sk.length+'<br>'+aNames(sk)}
+  if(/casual|عارض/.test(q))return'C · '+dl+' · '+(L.c.C||[]).length+'<br>'+aNames(L.c.C||[]);
+  if(wantN&&!wantD)return T('Night shift guards on ','حرس الوردية الليلية يوم ')+dl+' · '+L.N.length+'<br>'+aNames(L.N);
+  if(wantD&&!wantN)return T('Day shift guards on ','حرس الوردية النهارية يوم ')+dl+' · '+L.D.length+'<br>'+aNames(L.D);
+  if(wantCnt||wantN||wantD||/shift|وردي|today|اليوم|who|مين/.test(q)){var cc=['V','A','S','SM','C','Z','R'].filter(function(c){return(L.c[c]||[]).length}).map(function(c){return kd(c)+' '+L.c[c].length}).join(' · ');return'<b>'+dl+'</b><br>D '+L.D.length+' · N '+L.N.length+' · DS '+(L.c.DS||[]).length+(cc?'<br>'+cc:'')+(L.un.length?'<br>'+T('Not marked ','مش مسجل ')+L.un.length:'')+'<br><span class="lb">'+T('Guards only; a DS counts in both D and N.','حرس فقط؛ الدبل بيتحسب في الاتنين.')+'</span>'}
+  return T('I did not understand. Try: ','مفهمتش. جرب: ')+A_HELP.slice(0,4).map(esc).join(' · ')}
+window.asAsk=asAnswer;
+var ASH=[];
+function askOpen(){
+  var h='<b>Ask the assistant</b><div class="lb" style="font-size:12px;margin:4px 0 8px">English or Arabic. It answers from the app\'s own data. To save a note: <b>remember: …</b></div><div style="display:flex;gap:8px"><input id="asq" dir="auto" enterkeyhint="send" placeholder="Ask or remember…" style="flex:1;font:inherit;font-size:16px;padding:10px;border-radius:12px;border:1px solid var(--bd);background:var(--card);color:inherit"><button data-asq="1">Ask</button></div><div class="dpw" style="margin-top:8px">'+A_HELP.map(function(x){return'<span class="dp" data-asc="'+esc(x)+'">'+esc(x)+'</span>'}).join('')+'</div>';
+  ASH.slice(0,6).forEach(function(x){h+='<div style="margin-top:10px;padding-top:8px;border-top:.5px solid var(--bd)"><div class="lb" style="font-size:12px">'+esc(x.q)+'</div><div style="margin-top:4px;line-height:1.5">'+x.a+'</div></div>'});
+  sheet(h+'<div class="bar"><button data-a="x">Close</button></div>')}
+function askDo(q){q=(q||'').trim();if(!q)return;var a;try{a=asAnswer(q)}catch(e){a='Could not answer that.'}ASH.unshift({q:q,a:a});if(ASH.length>12)ASH.pop();askOpen();var i=$('asq');if(i){i.value='';try{i.focus()}catch(e){}}}
+$('sh').addEventListener('keydown',function(e){if(e.key=='Enter'&&e.target&&e.target.id=='asq'){e.preventDefault();askDo(e.target.value)}});
 function cRecent(){
   var h='',L=hist.slice(-4).reverse();
   if(!L.length)return card('recent','Last changes','<div class="lb">No changes yet in this session.</div>');
@@ -2325,14 +2393,16 @@ function custOpen(){
   var d=dq(),h='<b>Customize the Today screen</b><div class="lb" style="font-size:12px;margin-top:4px">Show, hide or reorder the cards.</div>';
   d.o.forEach(function(id,i){var on=d.h.indexOf(id)<0;h+='<div class="rr"><span>'+DN[id]+'</span><span style="display:flex;gap:6px"><button data-dq="up" data-i="'+id+'"'+(i?'':' disabled')+'>▲</button><button data-dq="dn" data-i="'+id+'"'+(i<d.o.length-1?'':' disabled')+'>▼</button><button data-dq="tg" data-i="'+id+'" style="min-width:76px">'+(on?'Shown':'Hidden')+'</button></span></div>'});
   sheet(h+'<div class="bar"><button data-a="x">Done</button></div>')}
-$('sh').addEventListener('click',function(e){var v=e.target.closest('[data-asv]');if(v){asIdeasSave();return}var dl=e.target.closest('[data-asd]');if(dl){var f=Object.assign({},RO.f),I=(f.ideas||[]).slice();I.splice(+dl.dataset.asd,1);f.ideas=I;RO.f=f;saveRO();asIdeas();return}var b=e.target.closest('[data-dq]');if(!b)return;var d=dq(),id=b.dataset.i,i=d.o.indexOf(id),a=b.dataset.dq;
+$('sh').addEventListener('click',function(e){var aq=e.target.closest('[data-asq]');if(aq){askDo(($('asq')||{}).value);return}var ac=e.target.closest('[data-asc]');if(ac){askDo(ac.dataset.asc);return}var ag=e.target.closest('[data-ago]');if(ag){var gid=ag.dataset.ago;$('sh').style.display='none';tabGo('roster');setTimeout(function(){var c=document.querySelector('td.n[data-id="'+gid+'"]');if(c)c.scrollIntoView({block:'center'})},40);return}var v=e.target.closest('[data-asv]');if(v){asIdeasSave();return}var dl=e.target.closest('[data-asd]');if(dl){var f=Object.assign({},RO.f),I=(f.ideas||[]).slice();I.splice(+dl.dataset.asd,1);f.ideas=I;RO.f=f;saveRO();asIdeas();return}var b=e.target.closest('[data-dq]');if(!b)return;var d=dq(),id=b.dataset.i,i=d.o.indexOf(id),a=b.dataset.dq;
   if(a=='up'&&i>0){d.o.splice(i,1);d.o.splice(i-1,0,id)}
   else if(a=='dn'&&i<d.o.length-1){d.o.splice(i,1);d.o.splice(i+1,0,id)}
   else if(a=='tg'){var j=d.h.indexOf(id);if(j>=0)d.h.splice(j,1);else d.h.push(id)}
   dsave(d);custOpen();dashRender()});
 $('dash').addEventListener('click',function(e){var ax=e.target.closest('[data-asx]');if(ax){asDisSet(ssNow().dk,ax.dataset.asx);dashRender();return}
   if(e.target.closest('[data-asi]')){asIdeas();return}
-  var as=e.target.closest('[data-as]');if(as){var g=as.dataset.as;if(g.indexOf('tab:')==0)tabGo(g.slice(4));else if(g=='shift'){var sc=document.querySelector('[data-c="shift"]');if(sc)sc.scrollIntoView({block:'start'})}else{var gb=$(g);if(gb)gb.click()}return}
+  if(e.target.closest('[data-ask]')){askOpen();return}
+  if(e.target.closest('[data-asn]')){sndSet(!sndOn());if(sndOn())beep('ok');dashRender();return}
+  var as=e.target.closest('[data-as]');if(as){var g=as.dataset.as;if(g.indexOf('tab:')==0)tabGo(g.slice(4));else if(g=='shift'){var sc=document.querySelector('[data-c="shift"]');if(sc)sc.scrollIntoView({block:'start'})}else if(g=='ask')askOpen();else{var gb=$(g);if(gb)gb.click()}return}
   var ss=e.target.closest('[data-ss]');if(ss){var N=ssNow(),i=+ss.dataset.ss;if(i==1)$('rp').click();else if(i==2){ssSet(N.k,{c:1});ssOpen(N.sk,'p')}else if(i==3)ssOpen(N.sk,'t');else if(i==4)ssOpen(N.sk,'p');else ssSend();return}
   var t=e.target.closest('[data-go],[data-q]');if(!t)return;
   if(t.dataset.go){var id=t.dataset.go;tabGo('roster');setTimeout(function(){var c=document.querySelector('td.n[data-id="'+id+'"]');if(c)c.scrollIntoView({block:'center'})},40);return}
