@@ -37,5 +37,6 @@ The test icon is inverted (black background). Files: `apple-touch-icon-test.png`
 ## Assistant card (v61)
 - Text only. NO voice, no speech, no sound.
 - A card on the Today screen (`cAsst`, `asList`) that follows `LMD-web-policy.md` section 7: it only warns and suggests, it never changes data.
-- Normal warnings are hidden from 00:00 to 07:00; "Important" ones always show. A warning can be hidden for the day with the cross (kept on the phone, `lmd_asdis`).
+- Warnings show 24 hours a day. A warning can be hidden for the day with the cross (kept on the phone, `lmd_asdis`).
 - The "Idea for the app" button saves short notes in `RO.f.ideas` (last 100). The user brings the list to Claude.
+- v62: question box (`asAnswer`: matches the question to the app's own data, English and Arabic, no AI), notes with `remember: ...` stored in `RO.f.mem` (a date like 5/12 in a note shows as a reminder that day), and short sounds (`beep`, switch saved in `lmd_snd`). Sounds are tones only, never a voice. Keep all of this text only and free: no paid API, no data sent out.
